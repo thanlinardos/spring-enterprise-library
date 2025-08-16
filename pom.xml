@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.thanlinardos</groupId>
+    <artifactId>spring-enterprise-library</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>spring-enterprise-library</name>
+    <description>An enterprise library for spring boot web applications.</description>
+    <properties>
+        <java.version>21</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    <packaging>pom</packaging>
+    <modules>
+        <module>httpsclient</module>
+        <module>spring-cloud-security</module>
+    </modules>
+</project>
