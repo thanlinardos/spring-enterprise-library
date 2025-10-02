@@ -6,11 +6,23 @@ import org.springframework.security.oauth2.jwt.JwtClaimAccessor;
 
 import java.util.Optional;
 
-public class AuthenticationUtils {
+/**
+ * Utility class for processing spring security authentication related information.
+ */
+public abstract class AuthenticationUtils {
 
     private AuthenticationUtils() {
     }
 
+    /**
+     * Extracts the principal name from the given Authentication object.
+     * It first attempts to retrieve the 'sub' (subject) claim from the JWT.
+     * If 'sub' is not available, it falls back to the 'email' claim,
+     * and if 'email' is also not available, it uses the 'client_id' claim.
+     *
+     * @param authentication the Authentication object containing the JWT
+     * @return the principal name, or null if none of the claims are present
+     */
     public static String getPrincipalNameFromAuthentication(Authentication authentication) {
         Jwt principal = (Jwt) authentication.getPrincipal();
         return Optional.of(principal)

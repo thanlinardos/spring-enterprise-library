@@ -9,7 +9,7 @@ import java.util.*;
 
 import static com.thanlinardos.spring_enterprise_library.spring_cloud_security.constants.SecurityCommonConstants.ROLE_PREFIX;
 
-public class KeycloakUtils {
+public abstract class KeycloakUtils {
 
     private KeycloakUtils() {
     }
