@@ -4,6 +4,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 import java.time.*;
+import java.util.Comparator;
 import java.util.Objects;
 
 public abstract class DateUtils {
@@ -11,7 +12,14 @@ public abstract class DateUtils {
     public static final LocalDate MAX_DATE = LocalDate.of(9999, 12, 31);
     public static final LocalDate MIN_DATE = LocalDate.of(1, 1, 1);
 
+    public static final Comparator<LocalDate> NULL_AS_MIN_COMPARATOR = Comparator.nullsFirst(LocalDate::compareTo);
+    public static final Comparator<LocalDate> NULL_AS_MAX_COMPARATOR = Comparator.nullsLast(LocalDate::compareTo);
+
     private DateUtils() {
+    }
+
+    public static LocalDate getLastDayOfYear(Year year) {
+        return year.plusYears(1).atDay(1).minusDays(1);
     }
 
     /**
@@ -108,5 +116,36 @@ public abstract class DateUtils {
      */
     public static boolean isAfterOrEqual(@Nullable LocalDate date1, @Nullable LocalDate date2) {
         return Objects.equals(date1, date2) || isAfterNullAsMax(date1, date2);
+    }
+
+    public static LocalDate maxNullAsMax(@Nullable LocalDate date1, @Nullable LocalDate date2) {
+        return NULL_AS_MAX_COMPARATOR.compare(date1, date2) >= 0 ? date1 : date2;
+    }
+
+    public static LocalDate minNullAsMin(@Nullable LocalDate date1, @Nullable LocalDate date2) {
+        return NULL_AS_MIN_COMPARATOR.compare(date1, date2) <= 0 ? date1 : date2;
+    }
+
+    public static LocalDate maxNullAsMin(@Nullable LocalDate date1, @Nullable LocalDate date2) {
+        return NULL_AS_MIN_COMPARATOR.compare(date1, date2) >= 0 ? date1 : date2;
+    }
+
+    public static LocalDate minNullAsMax(@Nullable LocalDate date1, @Nullable LocalDate date2) {
+        return NULL_AS_MAX_COMPARATOR.compare(date1, date2) <= 0 ? date1 : date2;
+    }
+
+    @Nullable
+    public static LocalDate addDays(@Nullable LocalDate date, int days) {
+        return date == null ? null : date.plusDays(days);
+    }
+
+    @Nullable
+    public static LocalDate addDay(@Nullable LocalDate date) {
+        return addDays(date, 1);
+    }
+
+    @Nullable
+    public static LocalDate subtractDay(@Nullable LocalDate date) {
+        return addDays(date, -1);
     }
 }
