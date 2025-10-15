@@ -7,12 +7,22 @@ import org.springframework.security.config.annotation.web.configurers.AuthorizeH
 import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 
 import java.util.Collection;
-import java.util.List;
 
 import static org.springframework.util.StringUtils.hasText;
 
+/**
+ * Utility class for configuring security authorization based on authorities.
+ */
 class SecurityAuthorization {
 
+    /**
+     * Configures the authorization registry with the given authorities and public URLs.
+     *
+     * @param authRegistry    the authorization manager request matcher registry to configure
+     * @param authorities     the collection of authorities to configure
+     * @param publicReadUrls  the array of public read URLs (accessible via GET requests)
+     * @param publicWriteUrls the array of public write URLs (accessible via POST requests)
+     */
     protected static void configureAuthRegistry(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry authRegistry, Collection<Authority> authorities, String[] publicReadUrls, String[] publicWriteUrls) {
         authorities.forEach(authority -> authority.getAccess().getMethods()
                 .forEach(method -> addRequestMatcherForAuthorityUriAndMethod(authRegistry, authority, method)));

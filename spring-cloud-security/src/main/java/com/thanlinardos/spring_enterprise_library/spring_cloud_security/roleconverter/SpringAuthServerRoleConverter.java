@@ -11,8 +11,26 @@ import java.util.stream.Collectors;
 
 import static com.thanlinardos.spring_enterprise_library.spring_cloud_security.constants.SecurityCommonConstants.ROLE_PREFIX;
 
+/**
+ * A converter that extracts roles from a JWT token's "roles" claim
+ * and converts them into Spring Security GrantedAuthority objects.
+ */
 public class SpringAuthServerRoleConverter implements Converter<Jwt, Collection<GrantedAuthority>> {
 
+    /**
+     * Default constructor.
+     */
+    public SpringAuthServerRoleConverter() {
+        // Default constructor
+    }
+
+    /**
+     * Converts the JWT token into a collection of GrantedAuthority objects
+     * based on the roles found in the "roles" claim.
+     *
+     * @param jwt the JWT token.
+     * @return a collection of GrantedAuthority objects representing the roles.
+     */
     @Override
     public Collection<GrantedAuthority> convert(Jwt jwt) {
         // jwt.getClaims().get("scope")

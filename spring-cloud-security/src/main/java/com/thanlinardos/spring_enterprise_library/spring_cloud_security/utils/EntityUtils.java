@@ -7,6 +7,9 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+/**
+ * Utility class for handling entities extending BasicIdJpa.
+ */
 public abstract class EntityUtils {
 
     private EntityUtils() {

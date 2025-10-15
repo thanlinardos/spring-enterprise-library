@@ -2,6 +2,9 @@ package com.thanlinardos.spring_enterprise_library.spring_cloud_security.api.ser
 
 import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.base.PrivilegedResource;
 
+/**
+ * Service interface for managing access to privileged resources.
+ */
 public interface PrivilegedResourceService {
 
     /**

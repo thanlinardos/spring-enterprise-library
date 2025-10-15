@@ -1,10 +1,10 @@
-package com.thanlinardos.spring_enterprise_library.model;
+package com.thanlinardos.spring_enterprise_library.time.model;
 
-import com.thanlinardos.spring_enterprise_library.utils.DateUtils;
+import com.thanlinardos.spring_enterprise_library.time.TimeFactory;
+import com.thanlinardos.spring_enterprise_library.time.constants.TimeConstants;
+import com.thanlinardos.spring_enterprise_library.time.utils.DateUtils;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
-import lombok.Data;
-import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.Year;
@@ -15,58 +15,80 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static com.thanlinardos.spring_enterprise_library.utils.DateUtils.addDay;
-import static com.thanlinardos.spring_enterprise_library.utils.DateUtils.subtractDay;
-import static com.thanlinardos.spring_enterprise_library.utils.ObjectUtils.isAllObjectsNotNullAndEquals;
+import static com.thanlinardos.spring_enterprise_library.time.utils.DateUtils.*;
+import static com.thanlinardos.spring_enterprise_library.objects.utils.ObjectUtils.isAllObjectsNotNullAndEquals;
 
 /**
  * Represents a time interval with a start and end date.
  * Provides utility methods for creating, manipulating, and analyzing intervals.
+ *
+ * @param start the start date of the interval (nullable).
+ * @param end   the end date of the interval (nullable).
  */
-@Data
-public class Interval implements Comparable<Interval> {
+public record Interval(@Nullable LocalDate start, @Nullable LocalDate end) implements Comparable<Interval> {
 
-    public static final LocalDate MIN_DATE = LocalDate.MIN;
-    public static final LocalDate MAX_DATE = LocalDate.MAX;
-
-    @Nullable
-    private LocalDate start;
-    @Nullable
-    private LocalDate end;
-
-    public Interval(@Nullable LocalDate start, @Nullable LocalDate end) {
+    /**
+     * Constructs an Interval with the given start and end dates.
+     *
+     * @param start the start date of the interval (nullable)
+     * @param end   the end date of the interval (nullable)
+     * @throws IllegalArgumentException if the start date is after the end date
+     */
+    public Interval {
         if (isNotValid(start, end)) {
             throw new IllegalArgumentException("Start date must be before or equal to end date");
         }
-        this.start = start;
-        this.end = end;
     }
 
-    private boolean isNotValid(@Nullable LocalDate start, @Nullable LocalDate end) {
-        return start != null && end != null && start.isAfter(end);
-    }
-
+    /**
+     * Constructs an {@link Interval} for the given {@link YearMonth}.
+     *
+     * @param yearMonth the {@link YearMonth} to create the interval for.
+     */
     public Interval(YearMonth yearMonth) {
         this(yearMonth.atDay(1), yearMonth.atEndOfMonth());
     }
 
+    /**
+     * Constructs an {@link Interval} for the given {@link Year}.
+     *
+     * @param year the {@link Year} to create the interval for.
+     */
     public Interval(Year year) {
         this(year.atDay(1), DateUtils.getLastDayOfYear(year));
     }
 
     /**
-     * Constructs an {@link Interval} using ISO 8601 formatted dates ("YYYY-MM-DD")
+     * Validates whether the start date is before or equal to the end date.
      *
-     * @param startDate start of the interval (inclusive)
-     * @param endDate   end of the interval (inclusive)
-     * @return an {@link Interval} based on the given dates
+     * @param start the start date
+     * @param end   the end date
+     * @return true if the start date is after the end date, false otherwise.
      */
-    public static Interval forIsoDates(@Nullable String startDate, @Nullable String endDate) {
-        return new Interval(parseDate(startDate, LocalDate::parse), parseDate(endDate, LocalDate::parse));
+    public static boolean isNotValid(@Nullable LocalDate start, @Nullable LocalDate end) {
+        return start != null && end != null && start.isAfter(end);
     }
 
-    private static LocalDate parseDate(String date, Function<String, LocalDate> parser) {
-        return StringUtils.hasLength(date) ? parser.apply(date) : null;
+    /**
+     * Validates whether the start date is before or equal to the end date.
+     *
+     * @param start the start date.
+     * @param end   the end date.
+     * @return true if the start date is before or equal to the end date, false otherwise.
+     */
+    public static boolean isValid(@Nullable LocalDate start, @Nullable LocalDate end) {
+        return !isNotValid(start, end);
+    }
+
+    /**
+     * Constructs an {@link Interval} using ISO 8601 formatted dates ("YYYY-MM-DD").
+     *
+     * @param startDate start of the interval (inclusive).
+     * @param endDate   end of the interval (inclusive).
+     * @return an {@link Interval} based on the given dates.
+     */
+    public static Interval forIsoDates(@Nullable String startDate, @Nullable String endDate) {
+        return new Interval(parseLocalDate(startDate), parseLocalDate(endDate));
     }
 
     /**
@@ -89,12 +111,22 @@ public class Interval implements Comparable<Interval> {
         return new Interval(Year.of(year));
     }
 
+    /**
+     * Returns the start date, or the minimum date if the start is null.
+     *
+     * @return the start date or MIN_DATE
+     */
     public LocalDate getStartNullAsMin() {
-        return start == null ? MIN_DATE : start;
+        return hasNullStart() ? TimeFactory.getMinDate() : start;
     }
 
+    /**
+     * Returns the end date, or the maximum date if the end is null.
+     *
+     * @return the end date or MAX_DATE
+     */
     public LocalDate getEndNullAsMax() {
-        return end == null ? MAX_DATE : end;
+        return hasNullEnd() ? TimeFactory.getMaxDate() : end;
     }
 
     /**
@@ -116,10 +148,10 @@ public class Interval implements Comparable<Interval> {
         }
 
         // generate start dates from end dates, and vice versa, selecting only those that overlap with the given intervals, with start/end-specific sorting
-        List<LocalDate> startDates = getSortedDatesWithFunctionsPredicateAndComparator(intervals, Interval::getStart, i -> addDay(i.getEnd()),
-                DateUtils.NULL_AS_MIN_COMPARATOR, Interval::containsNullAsMin);
-        List<LocalDate> endDates = getSortedDatesWithFunctionsPredicateAndComparator(intervals, Interval::getEnd, i -> subtractDay(i.getStart()),
-                DateUtils.NULL_AS_MAX_COMPARATOR, Interval::containsNullAsMax);
+        List<LocalDate> startDates = getSortedDatesWithFunctionsPredicateAndComparator(intervals, Interval::start, i -> addDay(i.end()),
+                TimeConstants.NULL_AS_MIN_COMPARATOR, Interval::containsNullAsMin);
+        List<LocalDate> endDates = getSortedDatesWithFunctionsPredicateAndComparator(intervals, Interval::end, i -> subtractDay(i.start()),
+                TimeConstants.NULL_AS_MAX_COMPARATOR, Interval::containsNullAsMax);
 
         if (startDates.size() != endDates.size()) {
             throw new IllegalStateException(String.format("Unable to split collection of intervals: %s", intervals));
@@ -160,39 +192,73 @@ public class Interval implements Comparable<Interval> {
         return end == null;
     }
 
+    /**
+     * Checks if the given date is contained within this interval, treating null as MIN_DATE.
+     *
+     * @param date the date to check
+     * @return true if the date is contained, false otherwise
+     */
     public boolean containsNullAsMin(@Nullable LocalDate date) {
-        LocalDate nonNullDate = date == null ? MIN_DATE : date;
-        return (start == null || !nonNullDate.isBefore(start)) && (end == null || !nonNullDate.isAfter(end));
+        LocalDate nonNullDate = date == null ? TimeFactory.getMinDate() : date;
+        return (hasNullStart() || !nonNullDate.isBefore(start)) && (hasNullEnd() || !nonNullDate.isAfter(end));
     }
 
+    /**
+     * Checks if the given date is contained within this interval, treating null as MAX_DATE.
+     *
+     * @param date the date to check
+     * @return true if the date is contained, false otherwise
+     */
     public boolean containsNullAsMax(@Nullable LocalDate date) {
-        LocalDate nonNullDate = date == null ? MAX_DATE : date;
-        return (start == null || !nonNullDate.isBefore(start)) && (end == null || !nonNullDate.isAfter(end));
+        LocalDate nonNullDate = date == null ? TimeFactory.getMaxDate() : date;
+        return (hasNullStart() || !nonNullDate.isBefore(start)) && (hasNullEnd() || !nonNullDate.isAfter(end));
     }
 
+    /**
+     * Checks if the given date is contained within this interval.
+     *
+     * @param date the date to check.
+     * @return true if the date is contained, false otherwise.
+     */
     public boolean contains(@Nonnull LocalDate date) {
-        return (start == null || !date.isBefore(start)) && (end == null || !date.isAfter(end));
+        return (hasNullStart() || !date.isBefore(start)) && (hasNullEnd() || !date.isAfter(end));
     }
 
+    /**
+     * Returns true if this {@link Interval} fully contains the given yearMonth, otherwise false.
+     *
+     * @param yearMonth a {@link YearMonth}
+     * @return true if this {@link Interval} fully contains the given yearMonth, otherwise false
+     */
     public boolean contains(@Nonnull YearMonth yearMonth) {
         return contains(new Interval(yearMonth));
     }
 
+    /**
+     * Checks if this {@link Interval} fully contains the given Interval.
+     *
+     * @param interval a given {@link Interval}
+     * @return true if this {@link Interval} fully contains the given Interval, otherwise false
+     */
     public boolean contains(@Nonnull Interval interval) {
-        return (hasNullStart() || (interval.hasNullStart() || !DateUtils.isBeforeNullAsMin(interval.getStart(), getStart())))
-                && (hasNullEnd() || (interval.hasNullEnd() || !DateUtils.isAfterNullAsMax(interval.getEnd(), getEnd())));
+        return (hasNullStart() || (interval.hasNullStart() || !DateUtils.isBeforeNullAsMin(interval.start(), start())))
+                && (hasNullEnd() || (interval.hasNullEnd() || !DateUtils.isAfterNullAsMax(interval.end(), end())));
     }
 
     /**
+     * Checks if this {@link Interval} overlaps the given Interval.
+     *
      * @param interval a given {@link Interval}
      * @return true if this {@link Interval} overlaps the given Interval, otherwise false
      */
     public boolean overlaps(@Nonnull Interval interval) {
-        return (hasNullStart() || !DateUtils.isAfterNullAsMax(getStart(), interval.getEnd()))
-                && (hasNullEnd() || !DateUtils.isBeforeNullAsMin(getEnd(), interval.getStart()));
+        return (hasNullStart() || !DateUtils.isAfterNullAsMax(start(), interval.end()))
+                && (hasNullEnd() || !DateUtils.isBeforeNullAsMin(end(), interval.start()));
     }
 
     /**
+     * Checks if this {@link Interval} overlaps with any of the given intervals, otherwise false.
+     *
      * @param intervals a collection of {@link Interval}
      * @return true if this {@link Interval} overlaps with any of the given intervals, otherwise false
      */
@@ -235,6 +301,8 @@ public class Interval implements Comparable<Interval> {
     }
 
     /**
+     * Checks if this {@link Interval} partially overlaps the given Interval, meaning they overlap but neither contains the other.
+     *
      * @param interval a given {@link Interval}
      * @return true if this {@link Interval} overlaps the given Interval and neither Interval contains the other, otherwise false
      */
@@ -259,8 +327,8 @@ public class Interval implements Comparable<Interval> {
     public Optional<Interval> getOverlap(@Nonnull Interval interval) {
         if (overlaps(interval)) {
             return Optional.of(new Interval(
-                    DateUtils.maxNullAsMin(this.getStart(), interval.getStart()),
-                    DateUtils.minNullAsMax(this.getEnd(), interval.getEnd())
+                    DateUtils.maxNullAsMin(this.start(), interval.start()),
+                    DateUtils.minNullAsMax(this.end(), interval.end())
             ));
         }
         return Optional.empty();
@@ -289,15 +357,15 @@ public class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Set the start date of this interval to the input {@code lowerBound} according to {@link Interval#boundStartDate(LocalDate)}
-     * If the bounding results in an invalid interval, it doesn't change the original start date of this interval.
+     * Returns a new version of this interval, where the start date is bounded according to {@link Interval#boundStartDate(LocalDate)}.
+     * If the bounding results in an invalid interval, the original interval is returned.
      *
      * @param lowerBound a date defining the lower bound to apply to this interval.
+     * @return a new version of this interval, bounded according to given {@code lowerBound}, or the original interval if the bounding results in an invalid interval.
      */
-    public void boundAndSetStartDateIfValid(@Nullable LocalDate lowerBound) {
-        boundStartDate(lowerBound)
-                .map(Interval::getStart)
-                .ifPresent(this::setStart);
+    public Interval boundStartDateIfValid(@Nullable LocalDate lowerBound) {
+        return boundStartDate(lowerBound)
+                .orElse(this);
     }
 
     /**
@@ -435,7 +503,7 @@ public class Interval implements Comparable<Interval> {
 
         for (Interval interval : sortedIntervals) {
             if (shouldMergeCurrentIntervalWithNextInterval(current, interval, mergeAdjacentIntervals)) {
-                current = new Interval(current.getStart(), DateUtils.maxNullAsMax(current.getEnd(), interval.getEnd()));
+                current = new Interval(current.start(), DateUtils.maxNullAsMax(current.end(), interval.end()));
             } else {
                 result.add(current);
                 current = interval;
@@ -449,8 +517,8 @@ public class Interval implements Comparable<Interval> {
     }
 
     private static boolean shouldMergeCurrentIntervalWithNextInterval(Interval current, Interval next, boolean mergeAdjacentIntervals) {
-        LocalDate adjustedEndDate = mergeAdjacentIntervals ? addDay(current.getEnd()) : current.getEnd();
-        return !DateUtils.isAfterNullAsMax(next.getStart(), adjustedEndDate);
+        LocalDate adjustedEndDate = mergeAdjacentIntervals ? addDay(current.end()) : current.end();
+        return !DateUtils.isAfterNullAsMax(next.start(), adjustedEndDate);
     }
 
     private static List<Interval> sort(Collection<Interval> intervals) {
@@ -466,8 +534,8 @@ public class Interval implements Comparable<Interval> {
      * @return true if this Interval ends on the day before the given Interval starts or starts on the day after the given Interval ends, otherwise false.
      */
     public boolean adjacent(@Nonnull Interval interval) {
-        return isAllObjectsNotNullAndEquals(subtractDay(getStart()), interval.getEnd())
-                || isAllObjectsNotNullAndEquals(getEnd(), subtractDay(interval.getStart()));
+        return isAllObjectsNotNullAndEquals(subtractDay(start()), interval.end())
+                || isAllObjectsNotNullAndEquals(end(), subtractDay(interval.start()));
     }
 
     /**
@@ -503,26 +571,26 @@ public class Interval implements Comparable<Interval> {
      * @return list of intervals after subtracting the given {@code intervals} from this {@link Interval}
      */
     public List<Interval> subtract(Collection<Interval> intervals) {
-        @Nullable LocalDate nextPossibleStartDate = this.getStart();
+        @Nullable LocalDate nextPossibleStartDate = this.start();
         boolean endCrossed = false;
         List<Interval> resultIntervals = new ArrayList<>();
         for (Interval overlap : this.getOverlaps(intervals)) {
-            if (DateUtils.isBeforeNullAsMin(nextPossibleStartDate, overlap.getStart())) {
+            if (DateUtils.isBeforeNullAsMin(nextPossibleStartDate, overlap.start())) {
                 resultIntervals.add(new Interval(
                         nextPossibleStartDate,
-                        DateUtils.minNullAsMax(this.getEnd(), subtractDay(overlap.getStart())))
+                        DateUtils.minNullAsMax(this.end(), subtractDay(overlap.start())))
                 );
             }
-            if (DateUtils.isAfterOrEqual(overlap.getEnd(), this.getEnd())) {
+            if (DateUtils.isAfterOrEqual(overlap.end(), this.end())) {
                 endCrossed = true;
                 break;
             }
-            if (DateUtils.isBeforeOrEqual(nextPossibleStartDate, overlap.getEnd())) {
-                nextPossibleStartDate = addDay(overlap.getEnd());
+            if (DateUtils.isBeforeOrEqual(nextPossibleStartDate, overlap.end())) {
+                nextPossibleStartDate = addDay(overlap.end());
             }
         }
         if (!endCrossed) {
-            resultIntervals.add(new Interval(nextPossibleStartDate, getEnd()));
+            resultIntervals.add(new Interval(nextPossibleStartDate, end()));
         }
 
         return resultIntervals;
@@ -530,12 +598,11 @@ public class Interval implements Comparable<Interval> {
 
     @Override
     public int compareTo(@Nonnull Interval o) {
-        int startComparisonResult = DateUtils.NULL_AS_MIN_COMPARATOR.compare(getStart(), o.getStart());
+        int startComparisonResult = TimeConstants.NULL_AS_MIN_COMPARATOR.compare(start(), o.start());
         if (startComparisonResult == 0) {
-            return DateUtils.NULL_AS_MAX_COMPARATOR.compare(getEnd(), o.getEnd());
+            return TimeConstants.NULL_AS_MAX_COMPARATOR.compare(end(), o.end());
         } else {
             return startComparisonResult;
         }
     }
-
 }

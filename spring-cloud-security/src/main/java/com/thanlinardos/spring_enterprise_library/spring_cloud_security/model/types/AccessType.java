@@ -9,34 +9,56 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Enum representing different types of access permissions.
+ */
 public enum AccessType {
 
+    /** CRUD operation types mapped to HTTP methods */
     CREATE("CREATE", HttpMethod.POST),
+    /** read operations */
     READ("READ", HttpMethod.GET, HttpMethod.OPTIONS, HttpMethod.TRACE, HttpMethod.HEAD),
+    /** update operations */
     UPDATE("UPDATE", HttpMethod.PUT),
+    /** patch operations */
     PATCH("PATCH", HttpMethod.PATCH),
+    /** delete operations */
     DELETE("DELETE", HttpMethod.DELETE),
+    /** all operation types */
     ALL("ALL", HttpMethod.values());
 
     private final String value;
     @Getter
     private final List<HttpMethod> methods;
 
+    /**
+     * Constructor for AccessType.
+     *
+     * @param value   the string value of the access type
+     * @param methods the associated HTTP methods
+     */
     AccessType(String value, HttpMethod... methods) {
         this.value = value;
         this.methods = Collections.unmodifiableList(Arrays.asList(methods));
     }
 
+    /**
+     * Returns the string value of the AccessType.
+     *
+     * @return the string value
+     */
     @JsonValue
     public String getValue() {
         return value;
     }
 
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
+    /**
+     * Creates an AccessType enum from a string value.
+     *
+     * @param value the string value
+     * @return the corresponding AccessType enum
+     * @throws IllegalArgumentException if the value does not correspond to any AccessType
+     */
     @JsonCreator
     public static AccessType fromValue(String value) {
         for (AccessType b : AccessType.values()) {
@@ -45,5 +67,10 @@ public enum AccessType {
             }
         }
         throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
     }
 }

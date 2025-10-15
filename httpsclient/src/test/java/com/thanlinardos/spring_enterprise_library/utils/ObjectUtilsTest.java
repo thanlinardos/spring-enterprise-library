@@ -1,5 +1,6 @@
 package com.thanlinardos.spring_enterprise_library.utils;
 
+import com.thanlinardos.spring_enterprise_library.objects.utils.ObjectUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

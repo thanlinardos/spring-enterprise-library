@@ -30,6 +30,12 @@ import java.util.List;
 import static com.thanlinardos.spring_enterprise_library.spring_cloud_security.constants.SecurityCommonConstants.PUBLIC_READ_URLS;
 import static com.thanlinardos.spring_enterprise_library.spring_cloud_security.constants.SecurityCommonConstants.PUBLIC_WRITE_URLS;
 
+/**
+ * Common security configuration class for setting up OAuth2 resource server
+ * with either JWT or opaque token support.
+ *
+ * @param <T> the type of Role used in the application
+ */
 @Getter
 public class SecurityCommonConfig<T extends Role> {
 
@@ -48,22 +54,50 @@ public class SecurityCommonConfig<T extends Role> {
 
     private final RoleService<T> roleService;
 
+    /**
+     * Constructor to initialize the SecurityCommonConfig with a RoleService.
+     *
+     * @param roleService the RoleService to manage roles.
+     */
     public SecurityCommonConfig(RoleService<T> roleService) {
         this.roleService = roleService;
     }
 
+    /**
+     * Override this method to provide custom authorities for security configuration.
+     *
+     * @return a collection of Authority objects.
+     */
     protected Collection<Authority> getAuthorities() {
         return Collections.emptyList();
     }
 
+    /**
+     * Override this method to provide custom public read URLs for security configuration.
+     *
+     * @return an array of public read URLs.
+     */
     protected String[] getAllPublicReadUrls() {
         return PUBLIC_READ_URLS.toArray(new String[0]);
     }
 
+    /**
+     * Override this method to provide custom public write URLs for security configuration.
+     *
+     * @return an array of public write URLs.
+     */
     protected String[] getAllPublicWriteUrls() {
         return PUBLIC_WRITE_URLS.toArray(new String[0]);
     }
 
+    /**
+     * Builds a CorsConfiguration object with the specified parameters.
+     *
+     * @param allowedMethods the list of allowed HTTP methods.
+     * @param exposedHeaders the list of headers to be exposed to the client.
+     * @param maxAge         the maximum age (in seconds) for the CORS configuration.
+     * @return a CorsConfiguration object.
+     */
     protected CorsConfiguration buildCorsConfiguration(List<String> allowedMethods, List<String> exposedHeaders, long maxAge) {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(Collections.singletonList(getAngularUiUrl()));
@@ -75,6 +109,13 @@ public class SecurityCommonConfig<T extends Role> {
         return config;
     }
 
+    /**
+     * Configures the security filter chain for user login and resource access.
+     *
+     * @param http the HttpSecurity object to configure.
+     * @return the configured SecurityFilterChain.
+     * @throws Exception if an error occurs during configuration.
+     */
     protected SecurityFilterChain userLoginSecurityFilterChain(HttpSecurity http) throws Exception {
         http.exceptionHandling(ehc -> ehc.accessDeniedHandler(new CustomAccessDeniedHandler()));
         http.csrf(csrfConfig -> csrfConfig.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())

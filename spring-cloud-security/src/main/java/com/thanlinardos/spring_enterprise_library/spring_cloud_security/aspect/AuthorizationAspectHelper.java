@@ -24,6 +24,9 @@ import java.util.*;
 import static com.thanlinardos.spring_enterprise_library.spring_cloud_security.utils.AspectUtils.getSimpleClassName;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
+/**
+ * Helper class for authorization aspects.
+ */
 @Slf4j
 public class AuthorizationAspectHelper {
 
@@ -32,6 +35,14 @@ public class AuthorizationAspectHelper {
     private AuthorizationAspectHelper() {
     }
 
+    /**
+     * Authorizes a REST controller operation based on the provided proceeding join point and privileged resource service.
+     *
+     * @param proceedingJoinPoint       the proceeding join point representing the controller operation.
+     * @param privilegedResourceService the service used to check access to privileged resources.
+     * @return the result of the controller operation, potentially filtered for authorized resources.
+     * @throws Throwable if an error occurs during authorization or execution of the controller operation.
+     */
     public static Object authorizeControllerOperation(ProceedingJoinPoint proceedingJoinPoint, PrivilegedResourceService privilegedResourceService) throws Throwable {
         final String signature = proceedingJoinPoint.getSignature().toShortString();
         boolean isModifyingOperation = authorizeModifyingOperation(proceedingJoinPoint, signature, privilegedResourceService);
@@ -66,8 +77,10 @@ public class AuthorizationAspectHelper {
                 log.debug("{} -> {}", getPrivilegedResourceNames(collection), getPrivilegedResourceNames(authorizedResources));
                 return new ResponseEntity<>(authorizedResources, responseEntity.getHeaders(), responseEntity.getStatusCode());
             }
-            case PrivilegedResource resource -> logAuthorizedResponse(signature, resource, responseEntity.getStatusCode(), getSimpleClassName(resource));
-            case Optional<?> optional when optional.isPresent() && optional.get() instanceof PrivilegedResource resource -> logAuthorizedResponse(signature, resource, responseEntity.getStatusCode(), getSimpleClassName(resource));
+            case PrivilegedResource resource ->
+                    logAuthorizedResponse(signature, resource, responseEntity.getStatusCode(), getSimpleClassName(resource));
+            case Optional<?> optional when optional.isPresent() && optional.get() instanceof PrivilegedResource resource ->
+                    logAuthorizedResponse(signature, resource, responseEntity.getStatusCode(), getSimpleClassName(resource));
             case null, default -> {
                 // no need to authorize
             }
@@ -75,6 +88,14 @@ public class AuthorizationAspectHelper {
         return null;
     }
 
+    /**
+     * Authorizes a service method based on the provided proceeding join point and privileged resource service.
+     *
+     * @param proceedingJoinPoint       the proceeding join point representing the service method.
+     * @param privilegedResourceService the service used to check access to privileged resources.
+     * @return the result of the service method, potentially filtered for authorized resources.
+     * @throws Throwable if an error occurs during authorization or execution of the service method.
+     */
     public static Object authorizeServiceMethod(ProceedingJoinPoint proceedingJoinPoint, PrivilegedResourceService privilegedResourceService) throws Throwable {
         final String signature = proceedingJoinPoint.getSignature().toShortString();
         if (isTransactional(proceedingJoinPoint)) {
@@ -99,8 +120,10 @@ public class AuthorizationAspectHelper {
                 log.debug("[{}] {} -> {}", signature, getPrivilegedResourceNames(collection), getPrivilegedResourceNames(authorizedResources));
                 return authorizedResources;
             }
-            case PrivilegedResource resource -> logAuthorizedResource(signature, getSimpleClassName(resource), resource);
-            case Optional<?> optional when optional.isPresent() && optional.get() instanceof PrivilegedResource resource -> logAuthorizedResource(signature, getSimpleClassName(resource), resource);
+            case PrivilegedResource resource ->
+                    logAuthorizedResource(signature, getSimpleClassName(resource), resource);
+            case Optional<?> optional when optional.isPresent() && optional.get() instanceof PrivilegedResource resource ->
+                    logAuthorizedResource(signature, getSimpleClassName(resource), resource);
             case null, default -> {
                 // no need to authorize
             }
@@ -114,6 +137,12 @@ public class AuthorizationAspectHelper {
         log.debug("[{}] result: {}", signature, resource);
     }
 
+    /**
+     * Refreshes the security context for scheduled tasks to run under the "owner" principal.
+     *
+     * @param jp             the join point representing the scheduled task.
+     * @param allAuthorities the list of all granted authorities to assign to the "owner" principal.
+     */
     public static void refreshOwnerSecurityContext(JoinPoint jp, List<GrantedAuthority> allAuthorities) {
         if (getContext().getAuthentication() != null) {
             return;
@@ -163,6 +192,13 @@ public class AuthorizationAspectHelper {
         }
     }
 
+    /**
+     * Throws an IllegalAccessException indicating unauthorized access to a privileged resource.
+     *
+     * @param methodSignature the signature of the method where the unauthorized access occurred.
+     * @param resource        the privileged resource that was accessed.
+     * @throws IllegalAccessException always thrown to indicate unauthorized access.
+     */
     protected static void throwIllegalAccessToResource(String methodSignature, PrivilegedResource resource) throws IllegalAccessException {
         throw new IllegalAccessException("["
                 + methodSignature
@@ -172,6 +208,13 @@ public class AuthorizationAspectHelper {
                 + AuthenticationUtils.getPrincipalNameFromAuthentication(getContext().getAuthentication()));
     }
 
+    /**
+     * Filters a collection of privileged resources, returning only those that the current principal can access.
+     *
+     * @param collection                the collection of resources to filter.
+     * @param privilegedResourceService the service used to check access to privileged resources.
+     * @return a list of privileged resources that the current principal can access.
+     */
     protected static List<PrivilegedResource> filterPrivilegedResources(Collection<?> collection, PrivilegedResourceService privilegedResourceService) {
         return collection.stream()
                 .map(PrivilegedResource.class::cast)
@@ -179,10 +222,24 @@ public class AuthorizationAspectHelper {
                 .toList();
     }
 
+    /**
+     * Checks if the proceeding join point is associated with a transactional method.
+     *
+     * @param proceedingJoinPoint the proceeding join point to check.
+     * @return true if the method is transactional, false otherwise.
+     */
     protected static boolean isTransactional(ProceedingJoinPoint proceedingJoinPoint) {
         return AspectUtils.hasAnnotation(proceedingJoinPoint, Transactional.class);
     }
 
+    /**
+     * Determines if the operation represented by the proceeding join point is a modifying operation.
+     * Modifying operations include those annotated with @PostMapping, @PutMapping, @DeleteMapping, @PatchMapping,
+     * or @RequestMapping with methods POST, PUT, DELETE, or PATCH.
+     *
+     * @param proceedingJoinPoint the proceeding join point to check.
+     * @return true if the operation is a modifying operation, false otherwise.
+     */
     protected static boolean isModifyingOperation(ProceedingJoinPoint proceedingJoinPoint) {
         return AspectUtils.hasAnnotation(proceedingJoinPoint, PostMapping.class)
                 || AspectUtils.hasAnnotation(proceedingJoinPoint, PutMapping.class)
@@ -192,6 +249,15 @@ public class AuthorizationAspectHelper {
                 List.of(RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH));
     }
 
+    /**
+     * Retrieves the HTTP method associated with a modifying operation represented by the proceeding join point.
+     * The method checks for annotations such as @PostMapping, @PutMapping, @DeleteMapping, @PatchMapping,
+     * or @RequestMapping with specific methods.
+     *
+     * @param proceedingJoinPoint the proceeding join point to check.
+     * @return the HttpMethod corresponding to the modifying operation.
+     * @throws NullPointerException if no HTTP method can be determined from the annotations.
+     */
     protected static HttpMethod getModifyingOperation(ProceedingJoinPoint proceedingJoinPoint) {
         if (AspectUtils.hasAnnotation(proceedingJoinPoint, PostMapping.class)) {
             return HttpMethod.POST;
@@ -206,6 +272,12 @@ public class AuthorizationAspectHelper {
         }
     }
 
+    /**
+     * Extracts the principal names from a collection of privileged resources.
+     *
+     * @param collection the collection of privileged resources.
+     * @return a list of principal names associated with the privileged resources.
+     */
     protected static List<String> getPrivilegedResourceNames(Collection<?> collection) {
         return collection.stream()
                 .map(PrivilegedResource.class::cast)

@@ -6,6 +6,9 @@ import jakarta.annotation.Nullable;
 import java.util.Optional;
 import java.util.function.Function;
 
+/**
+ * Utility class for handling models extending BasicIdModel.
+ */
 public abstract class ModelUtils {
 
     private ModelUtils() {

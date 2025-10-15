@@ -5,6 +5,9 @@ import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.util.*;
 
+/**
+ * Interface representing a resource that requires a certain privilege level for access.
+ */
 public interface PrivilegedResource {
 
     /**
@@ -22,6 +25,12 @@ public interface PrivilegedResource {
      */
     String getPrincipalName();
 
+    /**
+     * Checks if the principal has the same privilege level as the resource owner.
+     *
+     * @param principal the JWT principal to check against.
+     * @return true if the principal has the same privilege level, false otherwise.
+     */
     @JsonIgnore
     @SuppressWarnings("unchecked")
     default Boolean samePrivilegeLevelCheck(Jwt principal) {
@@ -54,6 +63,15 @@ public interface PrivilegedResource {
         return Integer.MAX_VALUE;
     }
 
+    /**
+     * Calculates the privilege level from a list of roles.
+     * The privilege level is determined by the minimum privilege level among the roles.
+     *
+     * @param roles List of roles to calculate the privilege level from.
+     * @param <T>   Type of the role, must extend Role.
+     * @return Integer value of the calculated privilege level,
+     * or Integer.MAX_VALUE if the list is empty, representing the lowest privilege level.
+     */
     static <T extends Role> int calcPrivilegeLvlFromRoles(List<T> roles) {
         return roles.stream()
                 .map(Role::getPrivilegeLvl)

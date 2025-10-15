@@ -4,19 +4,36 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+/**
+ * Base class for JPA entities with a generated ID.
+ */
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @SuperBuilder
 @MappedSuperclass
 public class BasicIdJpa {
 
+    /**
+     * The unique identifier for the entity.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    /**
+     * Default constructor.
+     */
+    public BasicIdJpa() {
+    }
+
+    /**
+     * Constructs a BasicIdJpa with the specified ID.
+     *
+     * @param id the ID to set.
+     */
+    public BasicIdJpa(Long id) {
+        this.id = id;
+    }
 }

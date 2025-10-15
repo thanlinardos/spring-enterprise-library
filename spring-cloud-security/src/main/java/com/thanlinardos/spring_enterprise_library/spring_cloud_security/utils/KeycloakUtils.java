@@ -9,11 +9,23 @@ import java.util.*;
 
 import static com.thanlinardos.spring_enterprise_library.spring_cloud_security.constants.SecurityCommonConstants.ROLE_PREFIX;
 
+/**
+ * Utility class for processing Keycloak-related information.
+ */
 public abstract class KeycloakUtils {
 
     private KeycloakUtils() {
     }
 
+    /**
+     * Extracts GrantedAuthority objects from the given JWT token
+     * based on the roles found in the "realm_access" claim.
+     *
+     * @param jwt         the JWT token.
+     * @param roleService the service to fetch roles and authorities.
+     * @param <T>         the type of Role.
+     * @return a collection of GrantedAuthority objects representing the roles, or an empty list if none found.
+     */
     public static <T extends Role> Collection<GrantedAuthority> getGrantedAuthoritiesFromJwt(Jwt jwt, RoleService<T> roleService) {
         if (jwt.getClaims().get("realm_access") instanceof Map<?, ?> realmAccess && !realmAccess.isEmpty()) {
             return getSimpleGrantedAuthoritiesFromRealmAccess(realmAccess, roleService);
@@ -22,6 +34,15 @@ public abstract class KeycloakUtils {
         }
     }
 
+    /**
+     * Extracts GrantedAuthority objects from the given realm access map
+     * based on the roles found in the "roles" key.
+     *
+     * @param realmAccess the map containing realm access information.
+     * @param roleService the service to fetch roles and authorities.
+     * @param <T>         the type of Role.
+     * @return a collection of GrantedAuthority objects representing the roles, or an empty list if none found.
+     */
     public static <T extends Role> Collection<GrantedAuthority> getSimpleGrantedAuthoritiesFromRealmAccess(Map<?, ?> realmAccess, RoleService<T> roleService) {
         return parseRoleNamesStream(realmAccess, roleService).stream()
                 .map(roleService::findGrantedAuthoritiesWithRole)

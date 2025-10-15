@@ -1,0 +1,10 @@
+# Example configuration for Spring Enterprise Library
+thanlinardos:
+  spring_enterprise_library:
+    time:
+      time-zone: UTC
+      accuracy: MILLISECONDS
+      max-date: 9999-12-31
+      min-date: 0001-01-01
+      max-date-time: 9999-12-31T23:59:59.999999999
+      min-date-time: 0001-01-01T00:00:00

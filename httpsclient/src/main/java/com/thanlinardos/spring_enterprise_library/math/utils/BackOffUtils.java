@@ -1,5 +1,8 @@
-package com.thanlinardos.spring_enterprise_library.utils;
+package com.thanlinardos.spring_enterprise_library.math.utils;
 
+/**
+ * Utility class for calculating backoff delays.
+ */
 public class BackOffUtils {
 
     private BackOffUtils() {
