@@ -75,9 +75,7 @@ public record Pair<S, T>(S first, T second) {
 
     @Override
     public int hashCode() {
-        int result = Objects.hashCode(first);
-        result = 31 * result + Objects.hashCode(second);
-        return result;
+        return Objects.hashCode(this.first) + 31 * Objects.hashCode(this.second);
     }
 
     @Override

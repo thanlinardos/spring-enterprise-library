@@ -271,17 +271,17 @@ public record Interval(@Nullable LocalDate start, @Nullable LocalDate end) imple
      * Returns true if this {@link Interval} overlaps with the given yearMonth, otherwise false.
      *
      * @param yearMonth a {@link YearMonth}
-     * @return true if this {@link Interval} overlaps with the given yearMonth, otherwise false
+     * @return true if this {@link Interval} overlaps with the given yearMonth, otherwise false.
      */
     public boolean overlaps(@Nonnull YearMonth yearMonth) {
         return overlaps(new Interval(yearMonth));
     }
 
     /**
-     * Returns true if any of the given intervals overlap with each other, otherwise false
+     * Returns true if any of the given intervals overlap with each other, otherwise false.
      *
      * @param intervals a list of intervals
-     * @return true if any of the given intervals overlap with each other
+     * @return true if any of the given intervals overlap with each other.
      */
     public static boolean anyOverlaps(Collection<Interval> intervals) {
         return intervals.stream()
@@ -289,10 +289,10 @@ public record Interval(@Nullable LocalDate start, @Nullable LocalDate end) imple
     }
 
     /**
-     * Returns the list of the given intervals, excluding any elements equal to this interval
+     * Returns the list of the given intervals, excluding any elements equal to this interval.
      *
      * @param intervals a list of intervals
-     * @return the result of removing any intervals equal to this interval
+     * @return the result of removing any intervals equal to this interval.
      */
     public List<Interval> relativeComplement(Collection<Interval> intervals) {
         return intervals.stream()
@@ -304,14 +304,15 @@ public record Interval(@Nullable LocalDate start, @Nullable LocalDate end) imple
      * Checks if this {@link Interval} partially overlaps the given Interval, meaning they overlap but neither contains the other.
      *
      * @param interval a given {@link Interval}
-     * @return true if this {@link Interval} overlaps the given Interval and neither Interval contains the other, otherwise false
+     * @return true if this {@link Interval} overlaps the given Interval and neither Interval contains the other, otherwise false.
      */
     public boolean partiallyOverlaps(@Nonnull Interval interval) {
         return this.overlaps(interval) && !this.contains(interval) && !interval.contains(this);
     }
 
     /**
-     * Returns the overlap between this Interval and the given interval, otherwise an empty Optional if there is no overlap
+     * Returns the overlap between this Interval and the given interval,
+     * otherwise an empty Optional if there is no overlap.
      * <pre>
      * This interval:
      * |--------------------------------------|
@@ -322,7 +323,8 @@ public record Interval(@Nullable LocalDate start, @Nullable LocalDate end) imple
      * </pre>
      *
      * @param interval a given {@link Interval}
-     * @return the overlap between this Interval and the given interval, otherwise an empty Optional if there is no overlap
+     * @return the overlap between this Interval and the given interval,
+     * otherwise an empty Optional if there is no overlap.
      */
     public Optional<Interval> getOverlap(@Nonnull Interval interval) {
         if (overlaps(interval)) {
@@ -346,22 +348,25 @@ public record Interval(@Nullable LocalDate start, @Nullable LocalDate end) imple
     }
 
     /**
-     * Returns a new version of this interval, where the start date is bounded according to the given {@code lowerBound}
+     * Returns a new version of this interval, where the start date is bounded according to the given {@code lowerBound}.
      * Equivalent to calling {@link Interval#getOverlap(Interval)} with an interval starting from {@code lowerBound} and ending in null.
      *
      * @param lowerBound a date defining the lower bound to apply to this interval
-     * @return a new version of this interval, bounded according to given {@code lowerBound}, or an empty Optional if the bounding results in an invalid interval
+     * @return a new version of this interval, bounded according to given {@code lowerBound},
+     * or an empty Optional if the bounding results in an invalid interval.
      */
     public Optional<Interval> boundStartDate(@Nullable LocalDate lowerBound) {
         return getOverlap(new Interval(lowerBound, null));
     }
 
     /**
-     * Returns a new version of this interval, where the start date is bounded according to {@link Interval#boundStartDate(LocalDate)}.
+     * Returns a new version of this interval, where the start date is bounded
+     * according to {@link Interval#boundStartDate(LocalDate)}.
      * If the bounding results in an invalid interval, the original interval is returned.
      *
      * @param lowerBound a date defining the lower bound to apply to this interval.
-     * @return a new version of this interval, bounded according to given {@code lowerBound}, or the original interval if the bounding results in an invalid interval.
+     * @return a new version of this interval, bounded according to given {@code lowerBound},
+     * or the original interval if the bounding results in an invalid interval.
      */
     public Interval boundStartDateIfValid(@Nullable LocalDate lowerBound) {
         return boundStartDate(lowerBound)
@@ -369,7 +374,8 @@ public record Interval(@Nullable LocalDate start, @Nullable LocalDate end) imple
     }
 
     /**
-     * Returns a normalized (see {@link Interval#normalize(Collection)}) list of overlaps between the given intervals and this interval
+     * Returns a normalized (see {@link Interval#normalize(Collection)}) list of overlaps
+     * between the given intervals and this interval.
      * <pre>
      * This interval:
      * |--------------------------------|
@@ -381,7 +387,7 @@ public record Interval(@Nullable LocalDate start, @Nullable LocalDate end) imple
      * </pre>
      *
      * @param intervals intervals to determine overlaps for
-     * @return a normalized list of overlaps between the given intervals and this interval
+     * @return a normalized list of overlaps between the given intervals and this interval.
      */
     public List<Interval> getOverlaps(Collection<Interval> intervals) {
         return getOverlaps(intervals, true);
@@ -398,7 +404,8 @@ public record Interval(@Nullable LocalDate start, @Nullable LocalDate end) imple
     }
 
     /**
-     * Returns a normalized (see {@link Interval#normalize(Collection)}) list of overlaps between the given intervals and this interval
+     * Returns a normalized (see {@link Interval#normalize(Collection)}) list of overlaps
+     * between the given intervals and this interval.
      * Whether to merge adjacent overlaps is subject to the value of {@code mergeAdjacentIntervals}
      * <pre>
      * This interval:
@@ -414,7 +421,7 @@ public record Interval(@Nullable LocalDate start, @Nullable LocalDate end) imple
      *
      * @param intervals              intervals to determine overlaps for
      * @param mergeAdjacentIntervals whether to merge adjacent overlaps
-     * @return a normalized list of overlaps between the given intervals and this interval
+     * @return a normalized list of overlaps between the given intervals and this interval.
      */
     public List<Interval> getOverlaps(Collection<Interval> intervals, boolean mergeAdjacentIntervals) {
         List<Interval> overlaps = intervals.stream()
@@ -425,7 +432,7 @@ public record Interval(@Nullable LocalDate start, @Nullable LocalDate end) imple
     }
 
     /**
-     * Returns a normalized list of the portions of {@code intervals} that do not overlap with this interval
+     * Returns a normalized list of the portions of {@code intervals} that do not overlap with this interval.
      * <pre>
      * This interval:
      *                |---------------|
@@ -437,7 +444,7 @@ public record Interval(@Nullable LocalDate start, @Nullable LocalDate end) imple
      * </pre>
      *
      * @param intervals list of intervals
-     * @return the portions of {@code intervals} that do not overlap with this interval
+     * @return the portions of {@code intervals} that do not overlap with this interval.
      */
     public List<Interval> getNotOverlaps(Collection<Interval> intervals) {
         List<Interval> overlaps = this.getOverlaps(intervals);
@@ -449,10 +456,10 @@ public record Interval(@Nullable LocalDate start, @Nullable LocalDate end) imple
     }
 
     /**
-     * Vararg variant of {@link Interval#getNotOverlaps(Collection)}
+     * Vararg variant of {@link Interval#getNotOverlaps(Collection)}.
      *
      * @param intervals given intervals
-     * @return the portions of {@code intervals} that do not overlap with this interval
+     * @return the portions of {@code intervals} that do not overlap with this interval.
      */
     public List<Interval> getNotOverlaps(Interval... intervals) {
         return getNotOverlaps(List.of(intervals));
@@ -470,7 +477,7 @@ public record Interval(@Nullable LocalDate start, @Nullable LocalDate end) imple
      * </pre>
      *
      * @param intervals collection of intervals to normalize
-     * @return normalized list of intervals
+     * @return normalized list of intervals.
      */
     public static List<Interval> normalize(Collection<Interval> intervals) {
         return normalize(intervals, true);
@@ -490,7 +497,7 @@ public record Interval(@Nullable LocalDate start, @Nullable LocalDate end) imple
      *
      * @param intervals              collection of intervals to normalize
      * @param mergeAdjacentIntervals whether to merge adjacent intervals
-     * @return normalized list of intervals
+     * @return normalized list of intervals.
      */
     public static List<Interval> normalize(Collection<Interval> intervals, boolean mergeAdjacentIntervals) {
         if (intervals.size() <= 1) {
@@ -531,7 +538,8 @@ public record Interval(@Nullable LocalDate start, @Nullable LocalDate end) imple
      * Checks if the given {@link Interval} is touching this Interval.
      *
      * @param interval a given {@link Interval}
-     * @return true if this Interval ends on the day before the given Interval starts or starts on the day after the given Interval ends, otherwise false.
+     * @return true if this Interval ends on the day before the given Interval starts
+     * or starts on the day after the given Interval ends, otherwise false.
      */
     public boolean adjacent(@Nonnull Interval interval) {
         return isAllObjectsNotNullAndEquals(subtractDay(start()), interval.end())
@@ -539,7 +547,7 @@ public record Interval(@Nullable LocalDate start, @Nullable LocalDate end) imple
     }
 
     /**
-     * Returns the remainder of this interval, after subtracting the overlap with the given interval
+     * Returns the remainder of this interval, after subtracting the overlap with the given interval.
      * <pre>
      * This:
      * |---------------------------|
@@ -550,14 +558,14 @@ public record Interval(@Nullable LocalDate start, @Nullable LocalDate end) imple
      * </pre>
      *
      * @param interval a given interval to subtract with
-     * @return list of intervals after subtracting the given {@code interval} from this {@link Interval}
+     * @return list of intervals after subtracting the given {@code interval} from this {@link Interval}.
      */
     public List<Interval> subtract(Interval interval) {
         return this.subtract(List.of(interval));
     }
 
     /**
-     * Returns the remainder of this interval, after subtracting the overlap with the given intervals
+     * Returns the remainder of this interval, after subtracting the overlap with the given intervals.
      * <pre>
      * This:
      * |---------------------------|
@@ -568,7 +576,7 @@ public record Interval(@Nullable LocalDate start, @Nullable LocalDate end) imple
      * </pre>
      *
      * @param intervals intervals to subtract with
-     * @return list of intervals after subtracting the given {@code intervals} from this {@link Interval}
+     * @return list of intervals after subtracting the given {@code intervals} from this {@link Interval}.
      */
     public List<Interval> subtract(Collection<Interval> intervals) {
         @Nullable LocalDate nextPossibleStartDate = this.start();

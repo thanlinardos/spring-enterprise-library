@@ -14,17 +14,17 @@ import java.util.List;
  */
 public enum AccessType {
 
-    /** CRUD operation types mapped to HTTP methods */
+    /** CRUD operation types mapped to HTTP methods. */
     CREATE("CREATE", HttpMethod.POST),
-    /** read operations */
+    /** Read operations. */
     READ("READ", HttpMethod.GET, HttpMethod.OPTIONS, HttpMethod.TRACE, HttpMethod.HEAD),
-    /** update operations */
+    /** Update operations. */
     UPDATE("UPDATE", HttpMethod.PUT),
-    /** patch operations */
+    /** Patch operations. */
     PATCH("PATCH", HttpMethod.PATCH),
-    /** delete operations */
+    /** Delete operations. */
     DELETE("DELETE", HttpMethod.DELETE),
-    /** all operation types */
+    /** All operation types. */
     ALL("ALL", HttpMethod.values());
 
     private final String value;
@@ -34,8 +34,8 @@ public enum AccessType {
     /**
      * Constructor for AccessType.
      *
-     * @param value   the string value of the access type
-     * @param methods the associated HTTP methods
+     * @param value   the string value of the access type.
+     * @param methods the associated HTTP methods.
      */
     AccessType(String value, HttpMethod... methods) {
         this.value = value;
@@ -45,7 +45,7 @@ public enum AccessType {
     /**
      * Returns the string value of the AccessType.
      *
-     * @return the string value
+     * @return the string value.
      */
     @JsonValue
     public String getValue() {

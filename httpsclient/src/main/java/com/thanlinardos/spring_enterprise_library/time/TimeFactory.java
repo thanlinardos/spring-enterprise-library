@@ -56,6 +56,15 @@ public class TimeFactory {
     }
 
     /**
+     * Gets the current instant.
+     *
+     * @return the current instant.
+     */
+    public static Instant getInstant() {
+        return timeProvider.getCurrentInstant();
+    }
+
+    /**
      * Gets the maximum date that can be used in the system.
      *
      * @return the maximum date that can be used in the system.
@@ -97,7 +106,7 @@ public class TimeFactory {
      * @return the minimum instant that can be used in the system.
      */
     public static Instant getMaxInstant() {
-        return TimeFactory.getMaxDateTime().toInstant(TimeFactory.getDefaultZone());
+        return getMaxDateTime().toInstant(getDefaultZone());
     }
 
     /**
@@ -106,7 +115,7 @@ public class TimeFactory {
      * @return the minimum instant that can be used in the system.
      */
     public static Instant getMinInstant() {
-        return TimeFactory.getMinDateTime().toInstant(TimeFactory.getDefaultZone());
+        return getMinDateTime().toInstant(getDefaultZone());
     }
 
     /**
@@ -124,6 +133,6 @@ public class TimeFactory {
      * @return the current time zone as a ZoneOffset object.
      */
     public static ZoneOffset getDefaultZone() {
-        return timeProvider.zoneId().getRules().getOffset(getDateTime());
+        return timeProvider.getDefaultZone();
     }
 }

@@ -1,8 +1,9 @@
 package com.thanlinardos.spring_enterprise_library.time.api;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import com.thanlinardos.spring_enterprise_library.time.model.InstantInterval;
+import com.thanlinardos.spring_enterprise_library.time.model.TimeInterval;
+
+import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
 
@@ -21,6 +22,13 @@ public interface TimeProvider {
     TimeUnit accuracy();
 
     /**
+     * Gets the default ZoneOffset of the TimeProvider
+     *
+     * @return the default ZoneOffset
+     */
+    ZoneOffset getDefaultZone();
+
+    /**
      * Gets the accuracy of the TimeProvider as ChronoUnit
      *
      * @return the accuracy as ChronoUnit
@@ -33,6 +41,13 @@ public interface TimeProvider {
      * @return the current date-time of specific time zone
      */
     LocalDateTime getCurrentDateTime();
+
+    /**
+     * Obtains the current instant from the system clock in the default time-zone
+     *
+     * @return the current instant of specific time zone
+     */
+    Instant getCurrentInstant();
 
     /**
      * Obtains the current date from the system clock in the specified time-zone
@@ -155,4 +170,20 @@ public interface TimeProvider {
      * @return the minimum date time.
      */
     LocalDateTime minDateTime();
+
+    /**
+     * Creates an {@link InstantInterval} starting from now plus the given seconds.
+     *
+     * @param seconds the number of seconds to add to the current instant.
+     * @return an {@link InstantInterval} starting from now plus the given seconds.
+     */
+    InstantInterval instantFromNowPlusSeconds(long seconds);
+
+    /**
+     * Creates a {@link TimeInterval} starting from now plus the given seconds.
+     *
+     * @param seconds the number of seconds to add to the current time.
+     * @return a {@link TimeInterval} starting from now plus the given seconds.
+     */
+    TimeInterval timeFromNowPlusSeconds(long seconds);
 }

@@ -1,6 +1,6 @@
 package com.thanlinardos.spring_enterprise_library.spring_cloud_security.exception;
 
-import com.nimbusds.openid.connect.sdk.federation.api.OperationType;
+import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.types.OperationType;
 
 /**
  * Custom exception class for handling Keycloak-related errors.

@@ -595,12 +595,12 @@ public record InstantInterval(@Nullable Instant start, @Nullable Instant end) im
         List<InstantInterval> result = new ArrayList<>();
         InstantInterval current = sortedIntervals.getFirst();
 
-        for (InstantInterval InstantInterval : sortedIntervals) {
-            if (shouldMergeCurrentInstantIntervalWithNextInstantInterval(current, InstantInterval, mergeAdjacentIntervals)) {
-                current = new InstantInterval(current.start(), InstantUtils.maxNullAsMax(current.end(), InstantInterval.end()));
+        for (InstantInterval interval : sortedIntervals) {
+            if (shouldMergeCurrentInstantIntervalWithNextInstantInterval(current, interval, mergeAdjacentIntervals)) {
+                current = new InstantInterval(current.start(), InstantUtils.maxNullAsMax(current.end(), interval.end()));
             } else {
                 result.add(current);
-                current = InstantInterval;
+                current = interval;
             }
         }
         result.add(current);
@@ -633,7 +633,7 @@ public record InstantInterval(@Nullable Instant start, @Nullable Instant end) im
     }
 
     /**
-     * Returns the remainder of this interval, after subtracting the overlap with the given interval
+     * Returns the remainder of this interval, after subtracting the overlap with the given interval.
      * <pre>
      * This:
      * |---------------------------|
@@ -651,7 +651,7 @@ public record InstantInterval(@Nullable Instant start, @Nullable Instant end) im
     }
 
     /**
-     * Returns the remainder of this InstantInterval, after subtracting the overlap with the given intervals
+     * Returns the remainder of this InstantInterval, after subtracting the overlap with the given intervals.
      * <pre>
      * This:
      * |---------------------------|

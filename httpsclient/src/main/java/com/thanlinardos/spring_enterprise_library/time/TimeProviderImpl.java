@@ -1,11 +1,10 @@
 package com.thanlinardos.spring_enterprise_library.time;
 
 import com.thanlinardos.spring_enterprise_library.time.api.TimeProvider;
+import com.thanlinardos.spring_enterprise_library.time.model.InstantInterval;
+import com.thanlinardos.spring_enterprise_library.time.model.TimeInterval;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.concurrent.TimeUnit;
@@ -24,6 +23,11 @@ public record TimeProviderImpl(ZoneId zoneId, TimeUnit accuracy, LocalDate maxDa
                                LocalDateTime maxDateTime, LocalDateTime minDateTime) implements TimeProvider {
 
     @Override
+    public ZoneOffset getDefaultZone() {
+        return zoneId.getRules().getOffset(Instant.now());
+    }
+
+    @Override
     public ChronoUnit getChronoAccuracy() {
         return accuracy.toChronoUnit();
     }
@@ -31,6 +35,11 @@ public record TimeProviderImpl(ZoneId zoneId, TimeUnit accuracy, LocalDate maxDa
     @Override
     public LocalDateTime getCurrentDateTime() {
         return LocalDateTime.now(zoneId);
+    }
+
+    @Override
+    public Instant getCurrentInstant() {
+        return getCurrentDateTime().toInstant(getDefaultZone());
     }
 
     @Override
@@ -90,4 +99,15 @@ public record TimeProviderImpl(ZoneId zoneId, TimeUnit accuracy, LocalDate maxDa
         return date.with(TemporalAdjusters.lastDayOfYear());
     }
 
+    @Override
+    public InstantInterval instantFromNowPlusSeconds(long seconds) {
+        var now = getCurrentInstant();
+        return new InstantInterval(now, now.plusSeconds(seconds));
+    }
+
+    @Override
+    public TimeInterval timeFromNowPlusSeconds(long seconds) {
+        var now = getCurrentDateTime();
+        return new TimeInterval(now, now.plusSeconds(seconds));
+    }
 }
