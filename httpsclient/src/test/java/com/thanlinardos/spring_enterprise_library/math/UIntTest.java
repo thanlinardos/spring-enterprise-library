@@ -1,5 +1,6 @@
 package com.thanlinardos.spring_enterprise_library.math;
 
+import com.thanlinardos.spring_enterprise_library.annotations.CoreTest;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -12,6 +13,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@CoreTest
 class UIntTest {
 
     public static Stream<Arguments> rangeUIntFactory() {
@@ -25,12 +27,16 @@ class UIntTest {
     @MethodSource("rangeUIntFactory")
     void testUInt_zero(Long value) {
         if (value == null) {
-            assertThrows(NullPointerException.class, () -> new UInt(value));
+            assertThrows(NullPointerException.class, () -> getUInt(null));
         } else if (value < UInt.MIN_VALUE || value > UInt.MAX_VALUE) {
-            assertThrows(IllegalArgumentException.class, () -> new UInt(value));
+            assertThrows(IllegalArgumentException.class, () -> getUInt(value));
         } else {
-            UInt uInt = new UInt(value);
+            UInt uInt = getUInt(value);
             assertEquals(value, uInt.longValue());
         }
+    }
+
+    private UInt getUInt(Long value) {
+        return new UInt(value);
     }
 }

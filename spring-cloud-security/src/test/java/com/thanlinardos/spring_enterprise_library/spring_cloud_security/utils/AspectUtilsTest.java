@@ -1,5 +1,6 @@
 package com.thanlinardos.spring_enterprise_library.spring_cloud_security.utils;
 
+import com.thanlinardos.spring_enterprise_library.annotations.CoreTest;
 import com.thanlinardos.spring_enterprise_library.spring_cloud_security.TestUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+@CoreTest
 class AspectUtilsTest {
 
     @Controller
@@ -30,6 +32,7 @@ class AspectUtilsTest {
         }
 
         @GetMapping
+        @SuppressWarnings("unused")
         public ResponseEntity<String> getMapping() {
             return ResponseEntity.ok("Hello");
         }
@@ -102,14 +105,14 @@ class AspectUtilsTest {
 
     public static Stream<Arguments> hasAnnotationWithPropertyParams() {
         return Stream.of(
-                Arguments.of("Has RequestMapping annotation with method property and GET value", RequestMapping.class, "get", "method", List.of(RequestMethod.GET)),
-                Arguments.of("Has RequestMapping annotation with method property and GET,POST,PUT values", RequestMapping.class, "getPostPut", "method", List.of(RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT))
+                Arguments.argumentSet("Has RequestMapping annotation with method property and GET value", RequestMapping.class, "get", "method", List.of(RequestMethod.GET)),
+                Arguments.argumentSet("Has RequestMapping annotation with method property and GET,POST,PUT values", RequestMapping.class, "getPostPut", "method", List.of(RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT))
         );
     }
 
-    @ParameterizedTest(name = "{0}: annotation {1} exists in  TestController#{2}")
+    @ParameterizedTest
     @MethodSource("hasAnnotationWithPropertyParams")
-    void hasAnnotationWithProperty(String description, Class<Annotation> annotation, String methodName, String propertyName, List<Object> values) throws NoSuchMethodException {
+    void hasAnnotationWithProperty(Class<Annotation> annotation, String methodName, String propertyName, List<Object> values) throws NoSuchMethodException {
         JoinPoint joinPoint = TestUtils.createDummyJoinPointForMethod(TestController.class.getDeclaredMethod(methodName));
         boolean actual = AspectUtils.hasAnnotationWithProperty((ProceedingJoinPoint) joinPoint, annotation, propertyName, values);
         Assertions.assertTrue(actual);

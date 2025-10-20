@@ -1,12 +1,11 @@
 package com.thanlinardos.spring_enterprise_library.model;
 
+import com.thanlinardos.spring_enterprise_library.annotations.SpringTest;
 import com.thanlinardos.spring_enterprise_library.time.model.Interval;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -14,8 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
-@SpringBootTest
-@TestPropertySource("classpath:application-test.properties")
+@SpringTest
 class IntervalTest {
 
     private static final Interval YEAR_2000 = Interval.forIsoDates("2000-01-01", "2000-12-31");

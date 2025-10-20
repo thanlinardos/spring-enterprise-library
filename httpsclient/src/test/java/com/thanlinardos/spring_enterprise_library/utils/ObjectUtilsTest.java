@@ -1,5 +1,6 @@
 package com.thanlinardos.spring_enterprise_library.utils;
 
+import com.thanlinardos.spring_enterprise_library.annotations.CoreTest;
 import com.thanlinardos.spring_enterprise_library.objects.utils.ObjectUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -9,6 +10,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.time.LocalDate;
 import java.util.stream.Stream;
 
+@CoreTest
 class ObjectUtilsTest {
 
     private static Stream<Arguments> isAllObjectsNotNullAndEqualsParams() {
