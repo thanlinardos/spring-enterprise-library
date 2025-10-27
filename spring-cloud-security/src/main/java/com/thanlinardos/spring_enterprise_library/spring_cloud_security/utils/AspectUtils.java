@@ -1,6 +1,8 @@
 package com.thanlinardos.spring_enterprise_library.spring_cloud_security.utils;
 
 import jakarta.annotation.Nullable;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
@@ -13,10 +15,8 @@ import java.util.*;
 /**
  * Utility methods for working with AspectJ join points and annotations.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class AspectUtils {
-
-    private AspectUtils() {
-    }
 
     /**
      * Returns the simple class name of the given object, or an empty string if the object is null.

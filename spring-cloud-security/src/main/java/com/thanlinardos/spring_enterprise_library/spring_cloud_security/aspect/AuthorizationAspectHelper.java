@@ -5,6 +5,8 @@ import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.ba
 import com.thanlinardos.spring_enterprise_library.spring_cloud_security.utils.AspectUtils;
 import com.thanlinardos.spring_enterprise_library.spring_cloud_security.utils.AuthenticationUtils;
 import jakarta.annotation.Nullable;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -28,12 +30,10 @@ import static org.springframework.security.core.context.SecurityContextHolder.ge
  * Helper class for authorization aspects.
  */
 @Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AuthorizationAspectHelper {
 
     private static final String OWNER = "owner";
-
-    private AuthorizationAspectHelper() {
-    }
 
     /**
      * Authorizes a REST controller operation based on the provided proceeding join point and privileged resource service.

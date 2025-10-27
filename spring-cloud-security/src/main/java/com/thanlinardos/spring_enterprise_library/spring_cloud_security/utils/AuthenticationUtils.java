@@ -1,5 +1,7 @@
 package com.thanlinardos.spring_enterprise_library.spring_cloud_security.utils;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtClaimAccessor;
@@ -9,10 +11,8 @@ import java.util.Optional;
 /**
  * Utility class for processing spring security authentication related information.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class AuthenticationUtils {
-
-    private AuthenticationUtils() {
-    }
 
     /**
      * Extracts the principal name from the given Authentication object.

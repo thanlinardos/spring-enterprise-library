@@ -1,6 +1,8 @@
 package com.thanlinardos.spring_enterprise_library.parse.utils;
 
 import jakarta.ws.rs.core.Response;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
@@ -12,10 +14,8 @@ import java.util.UUID;
 /**
  * A utility class for safely parsing various data types from strings and objects.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ParserUtil {
-
-    private ParserUtil() {
-    }
 
     /**
      * Safely parses a String to an Integer.

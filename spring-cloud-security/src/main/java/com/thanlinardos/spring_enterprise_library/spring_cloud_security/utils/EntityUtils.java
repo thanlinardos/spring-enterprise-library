@@ -1,7 +1,9 @@
 package com.thanlinardos.spring_enterprise_library.spring_cloud_security.utils;
 
-import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.entity.base.BasicIdJpa;
+import com.thanlinardos.spring_enterprise_library.model.entity.base.BasicIdJpa;
 import jakarta.annotation.Nullable;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -10,10 +12,8 @@ import java.util.function.Consumer;
 /**
  * Utility class for handling entities extending BasicIdJpa.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class EntityUtils {
-
-    private EntityUtils() {
-    }
 
     /**
      * Builds an entity with the given ID or returns null if the ID is null.
@@ -22,6 +22,7 @@ public abstract class EntityUtils {
      * @param <T>      the type of the entity extending BasicIdJpa.
      * @return an instance of the entity with the specified ID, or null if the ID is null.
      */
+    @SuppressWarnings("unchecked")
     @Nullable
     public static <T extends BasicIdJpa> T buildEntityWithIdOrNull(@Nullable Long entityId) {
         return (T) Optional.ofNullable(entityId)
@@ -36,6 +37,7 @@ public abstract class EntityUtils {
      * @param <T>      the type of the entity extending BasicIdJpa.
      * @return an instance of the entity with the specified ID.
      */
+    @SuppressWarnings("unchecked")
     public static <T extends BasicIdJpa> T buildEntityWithId(Long entityId) {
         return (T) BasicIdJpa.builder()
                 .id(entityId)

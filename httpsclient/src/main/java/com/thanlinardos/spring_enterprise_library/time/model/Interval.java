@@ -1,6 +1,7 @@
 package com.thanlinardos.spring_enterprise_library.time.model;
 
 import com.thanlinardos.spring_enterprise_library.time.TimeFactory;
+import com.thanlinardos.spring_enterprise_library.time.api.DateTemporal;
 import com.thanlinardos.spring_enterprise_library.time.constants.TimeConstants;
 import com.thanlinardos.spring_enterprise_library.time.utils.DateUtils;
 import jakarta.annotation.Nonnull;
@@ -25,7 +26,7 @@ import static com.thanlinardos.spring_enterprise_library.objects.utils.ObjectUti
  * @param start the start date of the interval (nullable).
  * @param end   the end date of the interval (nullable).
  */
-public record Interval(@Nullable LocalDate start, @Nullable LocalDate end) implements Comparable<Interval> {
+public record Interval(@Nullable LocalDate start, @Nullable LocalDate end) implements Comparable<Interval>, DateTemporal {
 
     /**
      * Constructs an Interval with the given start and end dates.
@@ -56,6 +57,10 @@ public record Interval(@Nullable LocalDate start, @Nullable LocalDate end) imple
      */
     public Interval(Year year) {
         this(year.atDay(1), DateUtils.getLastDayOfYear(year));
+    }
+
+    public Interval getInterval() {
+        return this;
     }
 
     /**
@@ -275,6 +280,16 @@ public record Interval(@Nullable LocalDate start, @Nullable LocalDate end) imple
      */
     public boolean overlaps(@Nonnull YearMonth yearMonth) {
         return overlaps(new Interval(yearMonth));
+    }
+
+    /**
+     * Returns true if this {@link Interval} overlaps with the given year, otherwise false.
+     *
+     * @param year a {@link Year}
+     * @return true if this {@link Interval} overlaps with the given year, otherwise false.
+     */
+    public boolean overlaps(@Nonnull Year year) {
+        return overlaps(new Interval(year));
     }
 
     /**

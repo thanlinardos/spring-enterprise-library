@@ -2,6 +2,8 @@ package com.thanlinardos.spring_enterprise_library.time.utils;
 
 import com.thanlinardos.spring_enterprise_library.time.TimeFactory;
 import jakarta.annotation.Nullable;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.springframework.util.StringUtils;
 
 import java.time.*;
@@ -14,10 +16,8 @@ import static com.thanlinardos.spring_enterprise_library.time.constants.TimeCons
 /**
  * Utility class for working with {@link Instant} objects.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class InstantUtils {
-
-    private InstantUtils() {
-    }
 
     /**
      * Parses an Instant string using the default parser in {@link Instant#parse(CharSequence)}.

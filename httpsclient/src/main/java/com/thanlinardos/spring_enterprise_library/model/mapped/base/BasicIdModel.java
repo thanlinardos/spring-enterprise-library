@@ -1,6 +1,7 @@
-package com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.mapped.base;
+package com.thanlinardos.spring_enterprise_library.model.mapped.base;
 
-import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.entity.base.BasicIdJpa;
+import com.thanlinardos.spring_enterprise_library.model.api.WithId;
+import com.thanlinardos.spring_enterprise_library.model.entity.base.BasicIdJpa;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
@@ -14,7 +15,7 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @SuperBuilder
-public class BasicIdModel implements Serializable {
+public class BasicIdModel implements Serializable, WithId {
 
     /**
      * The unique identifier for the model.

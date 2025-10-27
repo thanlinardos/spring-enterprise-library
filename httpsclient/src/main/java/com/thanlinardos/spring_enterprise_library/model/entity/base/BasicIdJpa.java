@@ -1,5 +1,6 @@
-package com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.entity.base;
+package com.thanlinardos.spring_enterprise_library.model.entity.base;
 
+import com.thanlinardos.spring_enterprise_library.model.api.WithId;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -13,7 +14,7 @@ import lombok.experimental.SuperBuilder;
 @Data
 @SuperBuilder
 @MappedSuperclass
-public class BasicIdJpa {
+public class BasicIdJpa implements WithId {
 
     /**
      * The unique identifier for the entity.

@@ -3,6 +3,8 @@ package com.thanlinardos.spring_enterprise_library.https.utils;
 import com.thanlinardos.spring_enterprise_library.https.properties.KeyAndTrustStoreProperties;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.http.ssl.SSLContextBuilder;
 
 import javax.net.ssl.KeyManagerFactory;
@@ -15,10 +17,8 @@ import java.security.cert.CertificateException;
 /**
  * Utility class for building SSL contexts and REST clients with custom keystore and truststore configurations.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SslContextUtil {
-
-    private SslContextUtil() {
-    }
 
     /**
      * The default type of the keystore and truststore.

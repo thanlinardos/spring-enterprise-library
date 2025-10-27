@@ -1,5 +1,7 @@
 package com.thanlinardos.spring_enterprise_library.spring_cloud_security.aspect;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 
@@ -7,10 +9,8 @@ import org.aspectj.lang.ProceedingJoinPoint;
  * Helper class for logging aspects, providing method execution time logging.
  */
 @Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class LoggingAspectHelper {
-
-    private LoggingAspectHelper() {
-    }
 
     /**
      * Logs the execution time of a method.

@@ -2,6 +2,8 @@ package com.thanlinardos.spring_enterprise_library.spring_cloud_security.utils;
 
 import com.thanlinardos.spring_enterprise_library.spring_cloud_security.api.service.RoleService;
 import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.base.Role;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 
@@ -12,10 +14,8 @@ import static com.thanlinardos.spring_enterprise_library.spring_cloud_security.c
 /**
  * Utility class for processing Keycloak-related information.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class KeycloakUtils {
-
-    private KeycloakUtils() {
-    }
 
     /**
      * Extracts GrantedAuthority objects from the given JWT token

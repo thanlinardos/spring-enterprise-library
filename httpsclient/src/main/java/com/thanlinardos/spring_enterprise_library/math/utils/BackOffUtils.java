@@ -1,12 +1,13 @@
 package com.thanlinardos.spring_enterprise_library.math.utils;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * Utility class for calculating backoff delays.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BackOffUtils {
-
-    private BackOffUtils() {
-    }
 
     /**
      * Exponential backoff delay calculation.

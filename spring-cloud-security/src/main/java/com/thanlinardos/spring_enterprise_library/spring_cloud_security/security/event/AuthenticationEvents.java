@@ -1,5 +1,7 @@
 package com.thanlinardos.spring_enterprise_library.spring_cloud_security.security.event;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.security.authentication.event.AbstractAuthenticationFailureEvent;
@@ -11,10 +13,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AuthenticationEvents {
-
-    private AuthenticationEvents() {
-    }
 
     /**
      * Logs successful authentication events.

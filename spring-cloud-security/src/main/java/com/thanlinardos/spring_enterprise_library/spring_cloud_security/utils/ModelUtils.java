@@ -1,7 +1,9 @@
 package com.thanlinardos.spring_enterprise_library.spring_cloud_security.utils;
 
-import com.thanlinardos.spring_enterprise_library.spring_cloud_security.model.mapped.base.BasicIdModel;
+import com.thanlinardos.spring_enterprise_library.model.mapped.base.BasicIdModel;
 import jakarta.annotation.Nullable;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.Optional;
 import java.util.function.Function;
@@ -9,10 +11,8 @@ import java.util.function.Function;
 /**
  * Utility class for handling models extending BasicIdModel.
  */
-public abstract class ModelUtils {
-
-    private ModelUtils() {
-    }
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class ModelUtils {
 
     /**
      * Safely retrieves the ID from a BasicIdModel, returning null if the model is null.

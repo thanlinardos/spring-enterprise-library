@@ -3,6 +3,8 @@ package com.thanlinardos.spring_enterprise_library.time.utils;
 import com.thanlinardos.spring_enterprise_library.time.TimeFactory;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.springframework.util.StringUtils;
 
 import java.time.*;
@@ -15,10 +17,8 @@ import static com.thanlinardos.spring_enterprise_library.time.constants.TimeCons
 /**
  * Utility class for date operations.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class DateUtils {
-
-    private DateUtils() {
-    }
 
     /**
      * Gets the first day of the given year.
