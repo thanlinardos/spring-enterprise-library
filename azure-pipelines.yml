@@ -40,5 +40,8 @@ stages:
         Contents: '**/target/*.?(war|jar)'
         TargetFolder: $(Build.ArtifactStagingDirectory)
 
-    - upload: $(Build.ArtifactStagingDirectory)
-      artifact: thanlinardos-spring-enterprise-library-drop
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: "$(Build.ArtifactStagingDirectory)"
+        artifact: thanlinardos-spring-enterprise-library-drop
+      displayName: "Publish thanlinardos-spring-enterprise-library-drop artifact"
