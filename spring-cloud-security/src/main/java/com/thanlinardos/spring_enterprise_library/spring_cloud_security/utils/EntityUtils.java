@@ -13,7 +13,7 @@ import java.util.function.Consumer;
  * Utility class for handling entities extending BasicIdJpa.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public abstract class EntityUtils {
+public class EntityUtils {
 
     /**
      * Builds an entity with the given ID or returns null if the ID is null.

@@ -51,8 +51,7 @@ public class AuthorizationAspectHelper {
             ResponseEntity<List<PrivilegedResource>> authorizedResources = authorizePrivilegedResponse(responseEntity, signature, privilegedResourceService);
             if (authorizedResources != null) {
                 return authorizedResources;
-            }
-            if (isModifyingOperation) {
+            } else if (isModifyingOperation) {
                 logAuthorizedResponse(signature, responseEntity.getBody(), responseEntity.getStatusCode(), getSimpleClassName(proceedingJoinPoint.getTarget().getClass()));
             }
         }
@@ -68,14 +67,7 @@ public class AuthorizationAspectHelper {
             case Optional<?> optional when optional.isPresent() && optional.get() instanceof PrivilegedResource resource && !privilegedResourceService.canCurrentPrincipalAccessResource(resource) ->
                     throwIllegalAccessToResource(signature, resource);
             case Collection<?> collection when collection.iterator().hasNext() && collection.iterator().next() instanceof PrivilegedResource -> {
-                List<PrivilegedResource> authorizedResources = filterPrivilegedResources(collection, privilegedResourceService);
-                log.info("[{}][{}] Authorization Filtering Collection of Resources: {} -> {}",
-                        responseEntity.getStatusCode(),
-                        signature,
-                        collection.size(),
-                        authorizedResources.size());
-                log.debug("{} -> {}", getPrivilegedResourceNames(collection), getPrivilegedResourceNames(authorizedResources));
-                return new ResponseEntity<>(authorizedResources, responseEntity.getHeaders(), responseEntity.getStatusCode());
+                return getResponseWithAuthorizedResources(responseEntity, signature, privilegedResourceService, collection);
             }
             case PrivilegedResource resource ->
                     logAuthorizedResponse(signature, resource, responseEntity.getStatusCode(), getSimpleClassName(resource));
@@ -86,6 +78,14 @@ public class AuthorizationAspectHelper {
             }
         }
         return null;
+    }
+
+    private static ResponseEntity<List<PrivilegedResource>> getResponseWithAuthorizedResources(ResponseEntity<?> responseEntity, String signature, PrivilegedResourceService privilegedResourceService, Collection<?> privilegedResources) {
+        List<PrivilegedResource> authorizedResources = filterPrivilegedResources(privilegedResources, privilegedResourceService);
+
+        log.info("[{}][{}] Authorization Filtering Collection of Resources: {} -> {}", responseEntity.getStatusCode(), signature, privilegedResources.size(), authorizedResources.size());
+        log.debug("{} -> {}", getPrivilegedResourceNames(privilegedResources), getPrivilegedResourceNames(authorizedResources));
+        return new ResponseEntity<>(authorizedResources, responseEntity.getHeaders(), responseEntity.getStatusCode());
     }
 
     /**
@@ -112,13 +112,7 @@ public class AuthorizationAspectHelper {
             case Optional<?> optional when optional.isPresent() && optional.get() instanceof PrivilegedResource resource && !privilegedResourceService.canCurrentPrincipalAccessResource(resource) ->
                     throwIllegalAccessToResource(signature, resource);
             case Collection<?> collection when collection.iterator().hasNext() && collection.iterator().next() instanceof PrivilegedResource -> {
-                List<PrivilegedResource> authorizedResources = filterPrivilegedResources(collection, privilegedResourceService);
-                log.info("[{}] Authorization Filtering Collection of Resources: {} -> {}",
-                        signature,
-                        collection.size(),
-                        authorizedResources.size());
-                log.debug("[{}] {} -> {}", signature, getPrivilegedResourceNames(collection), getPrivilegedResourceNames(authorizedResources));
-                return authorizedResources;
+                return getAuthorizedResources(privilegedResourceService, collection, signature);
             }
             case PrivilegedResource resource ->
                     logAuthorizedResource(signature, getSimpleClassName(resource), resource);
@@ -130,6 +124,14 @@ public class AuthorizationAspectHelper {
         }
 
         return result;
+    }
+
+    private static List<PrivilegedResource> getAuthorizedResources(PrivilegedResourceService privilegedResourceService, Collection<?> collection, String signature) {
+        List<PrivilegedResource> authorizedResources = filterPrivilegedResources(collection, privilegedResourceService);
+
+        log.info("[{}] Authorization Filtering Collection of Resources: {} -> {}", signature, collection.size(), authorizedResources.size());
+        log.debug("[{}] {} -> {}", signature, getPrivilegedResourceNames(collection), getPrivilegedResourceNames(authorizedResources));
+        return authorizedResources;
     }
 
     private static void logAuthorizedResource(String signature, String className, Object resource) {

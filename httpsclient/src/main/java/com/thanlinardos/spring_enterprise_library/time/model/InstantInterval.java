@@ -1,6 +1,8 @@
 package com.thanlinardos.spring_enterprise_library.time.model;
 
+import com.thanlinardos.spring_enterprise_library.error.errorcodes.ErrorCode;
 import com.thanlinardos.spring_enterprise_library.time.TimeFactory;
+import com.thanlinardos.spring_enterprise_library.time.api.InstantTemporal;
 import com.thanlinardos.spring_enterprise_library.time.constants.TimeConstants;
 import com.thanlinardos.spring_enterprise_library.time.utils.DateUtils;
 import com.thanlinardos.spring_enterprise_library.time.utils.InstantUtils;
@@ -27,7 +29,7 @@ import static com.thanlinardos.spring_enterprise_library.objects.utils.ObjectUti
  * @param start the start date of the InstantInterval (nullable).
  * @param end   the end date of the InstantInterval (nullable).
  */
-public record InstantInterval(@Nullable Instant start, @Nullable Instant end) implements Comparable<InstantInterval> {
+public record InstantInterval(@Nullable Instant start, @Nullable Instant end) implements Comparable<InstantInterval>, InstantTemporal {
 
     /**
      * Constructs an InstantInterval with the given start and end dates.
@@ -38,7 +40,7 @@ public record InstantInterval(@Nullable Instant start, @Nullable Instant end) im
      */
     public InstantInterval {
         if (isNotValid(start, end)) {
-            throw new IllegalArgumentException("Start date must be before or equal to end date");
+            throw ErrorCode.ILLEGAL_ARGUMENT.createCoreException("Found start date {0} to be after end date {1} when constructing Interval.", new Object[]{start, end});
         }
     }
 
@@ -48,7 +50,7 @@ public record InstantInterval(@Nullable Instant start, @Nullable Instant end) im
      * @param date the {@link LocalDate} to create the InstantInterval for.
      */
     public InstantInterval(LocalDate date) {
-        this(fromLocalDate(date), fromEndOfLocalDate(date));
+        this(toStartOfDate(date), toEndOfLocalDate(date));
     }
 
     /**
@@ -58,7 +60,7 @@ public record InstantInterval(@Nullable Instant start, @Nullable Instant end) im
      * @param endDate   the end {@link LocalDate} to create the InstantInterval for.
      */
     public InstantInterval(LocalDate startDate, LocalDate endDate) {
-        this(fromLocalDate(startDate), fromEndOfLocalDate(endDate));
+        this(toStartOfDate(startDate), toEndOfLocalDate(endDate));
     }
 
 
@@ -71,7 +73,7 @@ public record InstantInterval(@Nullable Instant start, @Nullable Instant end) im
      * @param zoneOffset the zoneOffset to use when converting LocalDate to Instant.
      */
     public InstantInterval(LocalDate startDate, LocalDate endDate, TimeUnit accuracy, ZoneOffset zoneOffset) {
-        this(fromLocalDate(startDate, zoneOffset), fromEndOfLocalDate(endDate, accuracy, zoneOffset));
+        this(toStartOfDate(startDate, zoneOffset), toEndOfLocalDate(endDate, accuracy, zoneOffset));
     }
 
     /**
@@ -89,7 +91,7 @@ public record InstantInterval(@Nullable Instant start, @Nullable Instant end) im
      * @param yearMonth the {@link YearMonth} to create the InstantInterval for.
      */
     public InstantInterval(YearMonth yearMonth) {
-        this(fromLocalDate(yearMonth.atDay(1)), fromLocalDate(yearMonth.atEndOfMonth()));
+        this(toStartOfDate(yearMonth.atDay(1)), toStartOfDate(yearMonth.atEndOfMonth()));
     }
 
     /**
@@ -98,7 +100,17 @@ public record InstantInterval(@Nullable Instant start, @Nullable Instant end) im
      * @param year the {@link Year} to create the InstantInterval for.
      */
     public InstantInterval(Year year) {
-        this(fromLocalDate(year.atDay(1)), fromLocalDate(DateUtils.getLastDayOfYear(year)));
+        this(toStartOfDate(year.atDay(1)), toStartOfDate(DateUtils.getLastDayOfYear(year)));
+    }
+
+    /**
+     * Returns this InstantInterval.
+     *
+     * @return this InstantInterval.
+     */
+    @Override
+    public InstantInterval getInterval() {
+        return this;
     }
 
     /**
@@ -319,13 +331,33 @@ public record InstantInterval(@Nullable Instant start, @Nullable Instant end) im
     }
 
     /**
-     * Checks if the given {@link InstantInterval} is fully contained within this {@link InstantInterval}.
+     * Checks if the given {@link LocalDate} is fully contained within this {@link InstantInterval}.
+     *
+     * @param date a given {@link LocalDate}.
+     * @return true if this {@link InstantInterval} fully contains the given {@link LocalDate}, otherwise false.
+     */
+    public boolean contains(@Nonnull LocalDate date) {
+        return contains(new InstantInterval(date));
+    }
+
+    /**
+     * Checks if the given {@link YearMonth} is fully contained within this {@link InstantInterval}.
      *
      * @param yearMonth a given {@link YearMonth}.
      * @return true if this {@link InstantInterval} fully contains the given {@link YearMonth}, otherwise false.
      */
     public boolean contains(@Nonnull YearMonth yearMonth) {
         return contains(new InstantInterval(yearMonth));
+    }
+
+    /**
+     * Checks if the given {@link Year} is fully contained within this {@link InstantInterval}.
+     *
+     * @param year a given {@link Year}.
+     * @return true if this {@link InstantInterval} fully contains the given {@link Year}, otherwise false.
+     */
+    public boolean contains(@Nonnull Year year) {
+        return contains(new InstantInterval(year));
     }
 
     /**
@@ -369,6 +401,16 @@ public record InstantInterval(@Nullable Instant start, @Nullable Instant end) im
      */
     public boolean overlaps(@Nonnull YearMonth yearMonth) {
         return overlaps(new InstantInterval(yearMonth));
+    }
+
+    /**
+     * Returns true if this {@link InstantInterval} overlaps with the given year, otherwise false.
+     *
+     * @param year a {@link Year}
+     * @return true if this {@link InstantInterval} overlaps with the given year, otherwise false.
+     */
+    public boolean overlaps(@Nonnull Year year) {
+        return overlaps(new InstantInterval(year));
     }
 
     /**

@@ -12,7 +12,7 @@ import java.util.Optional;
  * Utility class for processing spring security authentication related information.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public abstract class AuthenticationUtils {
+public class AuthenticationUtils {
 
     /**
      * Extracts the principal name from the given Authentication object.

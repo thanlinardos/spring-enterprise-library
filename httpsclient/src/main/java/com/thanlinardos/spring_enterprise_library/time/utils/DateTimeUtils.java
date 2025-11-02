@@ -17,7 +17,7 @@ import static com.thanlinardos.spring_enterprise_library.time.constants.TimeCons
  * Utility class for working with {@link LocalDateTime} objects.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public abstract class DateTimeUtils {
+public class DateTimeUtils {
 
     /**
      * Parses a dateTime string using the default parser in {@link LocalDateTime#parse(CharSequence)}.
@@ -47,7 +47,7 @@ public abstract class DateTimeUtils {
      * @return the converted dateTime, or null if the input date is null.
      */
     @Nullable
-    public static LocalDateTime fromLocalDate(@Nullable LocalDate date) {
+    public static LocalDateTime toStartOfDate(@Nullable LocalDate date) {
         return date == null ? null : date.atStartOfDay();
     }
 
@@ -61,21 +61,21 @@ public abstract class DateTimeUtils {
      * @return the converted dateTime, or null if the input date is null.
      */
     @Nullable
-    public static LocalDateTime fromEndOfLocalDate(@Nullable LocalDate date) {
-        return date == null ? null : subtractSingle(fromLocalDate(date.plusDays(1)));
+    public static LocalDateTime toEndOfDate(@Nullable LocalDate date) {
+        return date == null ? null : subtractSingle(toStartOfDate(date.plusDays(1)));
     }
 
     /**
      * Converts a {@link LocalDate} to a {@link LocalDateTime} at the end of the day (23:59:59.999...).
-     * See {@link DateTimeUtils#fromEndOfLocalDate(LocalDate)} for details.
+     * See {@link DateTimeUtils#toEndOfDate(LocalDate)} for details.
      *
      * @param date     the date to convert.
      * @param accuracy the accuracy to use for subtraction, overriding the default.
      * @return the converted dateTime, or null if the input date is null.
      */
     @Nullable
-    public static LocalDateTime fromEndOfLocalDate(@Nullable LocalDate date, TimeUnit accuracy) {
-        return date == null ? null : subtractSingle(fromLocalDate(date.plusDays(1)), accuracy);
+    public static LocalDateTime toEndOfDate(@Nullable LocalDate date, TimeUnit accuracy) {
+        return date == null ? null : subtractSingle(toStartOfDate(date.plusDays(1)), accuracy);
     }
 
     /**
@@ -85,7 +85,7 @@ public abstract class DateTimeUtils {
      * @return the converted date, or null if the input dateTime is null.
      */
     @Nullable
-    public static LocalDate toLocalDate(@Nullable LocalDateTime dateTime) {
+    public static LocalDate toDate(@Nullable LocalDateTime dateTime) {
         return dateTime == null ? null : dateTime.atZone(TimeFactory.getDefaultZone()).toLocalDate();
     }
 

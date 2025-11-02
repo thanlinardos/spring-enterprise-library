@@ -8,7 +8,7 @@ import java.util.Comparator;
 /**
  * A utility class that provides constants and comparators for handling time-related operations.
  */
-public abstract class TimeConstants {
+public class TimeConstants {
 
     private TimeConstants() {
     }

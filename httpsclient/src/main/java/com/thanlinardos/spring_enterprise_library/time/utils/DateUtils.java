@@ -18,7 +18,7 @@ import static com.thanlinardos.spring_enterprise_library.time.constants.TimeCons
  * Utility class for date operations.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public abstract class DateUtils {
+public class DateUtils {
 
     /**
      * Gets the first day of the given year.

@@ -1,6 +1,8 @@
 package com.thanlinardos.spring_enterprise_library.time.model;
 
+import com.thanlinardos.spring_enterprise_library.error.errorcodes.ErrorCode;
 import com.thanlinardos.spring_enterprise_library.time.TimeFactory;
+import com.thanlinardos.spring_enterprise_library.time.api.TimeTemporal;
 import com.thanlinardos.spring_enterprise_library.time.constants.TimeConstants;
 import com.thanlinardos.spring_enterprise_library.time.utils.DateUtils;
 import com.thanlinardos.spring_enterprise_library.time.utils.DateTimeUtils;
@@ -28,7 +30,7 @@ import static com.thanlinardos.spring_enterprise_library.objects.utils.ObjectUti
  * @param end   the end of the interval.
  */
 public record TimeInterval(@Nullable LocalDateTime start,
-                           @Nullable LocalDateTime end) implements Comparable<TimeInterval> {
+                           @Nullable LocalDateTime end) implements Comparable<TimeInterval>, TimeTemporal {
 
     /**
      * Constructs an interval with the given start and end dates.
@@ -39,7 +41,7 @@ public record TimeInterval(@Nullable LocalDateTime start,
      */
     public TimeInterval {
         if (isNotValid(start, end)) {
-            throw new IllegalArgumentException("Start date must be before or equal to end date");
+            throw ErrorCode.ILLEGAL_ARGUMENT.createCoreException("Found start date {0} to be after end date {1} when constructing Interval.", new Object[]{start, end});
         }
     }
 
@@ -49,7 +51,7 @@ public record TimeInterval(@Nullable LocalDateTime start,
      * @param date the {@link LocalDate} to create the interval for.
      */
     public TimeInterval(LocalDate date) {
-        this(fromLocalDate(date), fromEndOfLocalDate(date));
+        this(toStartOfDate(date), toEndOfDate(date));
     }
 
     /**
@@ -59,7 +61,7 @@ public record TimeInterval(@Nullable LocalDateTime start,
      * @param endDate   the end {@link LocalDate} to create the interval for.
      */
     public TimeInterval(LocalDate startDate, LocalDate endDate) {
-        this(fromLocalDate(startDate), fromEndOfLocalDate(endDate));
+        this(toStartOfDate(startDate), toEndOfDate(endDate));
     }
 
     /**
@@ -71,7 +73,7 @@ public record TimeInterval(@Nullable LocalDateTime start,
      * @param accuracy  the {@link TimeUnit} accuracy to represent the date-time interval with.
      */
     public TimeInterval(LocalDate startDate, LocalDate endDate, TimeUnit accuracy) {
-        this(fromLocalDate(startDate), fromEndOfLocalDate(endDate, accuracy));
+        this(toStartOfDate(startDate), toEndOfDate(endDate, accuracy));
     }
 
     /**
@@ -89,7 +91,7 @@ public record TimeInterval(@Nullable LocalDateTime start,
      * @param yearMonth the {@link YearMonth} to create the interval for.
      */
     public TimeInterval(YearMonth yearMonth) {
-        this(fromLocalDate(yearMonth.atDay(1)), fromLocalDate(yearMonth.atEndOfMonth()));
+        this(toStartOfDate(yearMonth.atDay(1)), toStartOfDate(yearMonth.atEndOfMonth()));
     }
 
     /**
@@ -98,7 +100,16 @@ public record TimeInterval(@Nullable LocalDateTime start,
      * @param year the {@link Year} to create the interval for.
      */
     public TimeInterval(Year year) {
-        this(fromLocalDate(year.atDay(1)), fromLocalDate(DateUtils.getLastDayOfYear(year)));
+        this(toStartOfDate(year.atDay(1)), toStartOfDate(DateUtils.getLastDayOfYear(year)));
+    }
+
+    /**
+     * Returns this interval.
+     *
+     * @return this interval.
+     */
+    public TimeInterval getInterval() {
+        return this;
     }
 
     /**
@@ -327,6 +338,17 @@ public record TimeInterval(@Nullable LocalDateTime start,
     }
 
     /**
+     * Checks if the given date is contained within this interval, by checking the start of the date.
+     *
+     * @param date the date to check.
+     * @return true if the date is contained, false otherwise.
+     */
+    public boolean contains(@Nonnull LocalDate date) {
+        LocalDateTime startOfDay = DateTimeUtils.toStartOfDate(date);
+        return (hasNullStart() || !startOfDay.isBefore(start)) && (hasNullEnd() || !startOfDay.isAfter(end));
+    }
+
+    /**
      * Checks if the given {@link YearMonth} is fully contained within this interval.
      *
      * @param yearMonth a given {@link YearMonth}.
@@ -377,6 +399,16 @@ public record TimeInterval(@Nullable LocalDateTime start,
      */
     public boolean overlaps(@Nonnull YearMonth yearMonth) {
         return overlaps(new TimeInterval(yearMonth));
+    }
+
+    /**
+     * Returns true if this {@link TimeInterval} overlaps with the given year, otherwise false.
+     *
+     * @param year a {@link Year}
+     * @return true if this {@link TimeInterval} overlaps with the given year, otherwise false
+     */
+    public boolean overlaps(@Nonnull Year year) {
+        return overlaps(new TimeInterval(year));
     }
 
     /**

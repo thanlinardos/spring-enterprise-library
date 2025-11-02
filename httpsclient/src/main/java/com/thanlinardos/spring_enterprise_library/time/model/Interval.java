@@ -1,5 +1,7 @@
 package com.thanlinardos.spring_enterprise_library.time.model;
 
+import com.thanlinardos.spring_enterprise_library.error.errorcodes.ErrorCode;
+import com.thanlinardos.spring_enterprise_library.error.exceptions.CoreException;
 import com.thanlinardos.spring_enterprise_library.time.TimeFactory;
 import com.thanlinardos.spring_enterprise_library.time.api.DateTemporal;
 import com.thanlinardos.spring_enterprise_library.time.constants.TimeConstants;
@@ -33,11 +35,11 @@ public record Interval(@Nullable LocalDate start, @Nullable LocalDate end) imple
      *
      * @param start the start date of the interval (nullable)
      * @param end   the end date of the interval (nullable)
-     * @throws IllegalArgumentException if the start date is after the end date
+     * @throws CoreException if the start date is after the end date.
      */
     public Interval {
         if (isNotValid(start, end)) {
-            throw new IllegalArgumentException("Start date must be before or equal to end date");
+            throw ErrorCode.ILLEGAL_ARGUMENT.createCoreException("Found start date {0} to be after end date {1} when constructing Interval.", new Object[]{start, end});
         }
     }
 

@@ -15,7 +15,7 @@ import static com.thanlinardos.spring_enterprise_library.spring_cloud_security.c
  * Utility class for processing Keycloak-related information.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public abstract class KeycloakUtils {
+public class KeycloakUtils {
 
     /**
      * Extracts GrantedAuthority objects from the given JWT token

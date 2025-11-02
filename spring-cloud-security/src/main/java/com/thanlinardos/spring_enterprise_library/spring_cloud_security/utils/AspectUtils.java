@@ -16,7 +16,7 @@ import java.util.*;
  * Utility methods for working with AspectJ join points and annotations.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public abstract class AspectUtils {
+public class AspectUtils {
 
     /**
      * Returns the simple class name of the given object, or an empty string if the object is null.

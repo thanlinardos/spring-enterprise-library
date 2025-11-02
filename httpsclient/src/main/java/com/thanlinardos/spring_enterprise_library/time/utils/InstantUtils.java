@@ -17,7 +17,7 @@ import static com.thanlinardos.spring_enterprise_library.time.constants.TimeCons
  * Utility class for working with {@link Instant} objects.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public abstract class InstantUtils {
+public class InstantUtils {
 
     /**
      * Parses an Instant string using the default parser in {@link Instant#parse(CharSequence)}.
@@ -47,7 +47,7 @@ public abstract class InstantUtils {
      * @return the corresponding Instant, or null if the input date is null.
      */
     @Nullable
-    public static Instant fromLocalDate(@Nullable LocalDate date) {
+    public static Instant toStartOfDate(@Nullable LocalDate date) {
         return date == null ? null : date.atStartOfDay().toInstant(TimeFactory.getDefaultZone());
     }
 
@@ -59,7 +59,7 @@ public abstract class InstantUtils {
      * @return the corresponding Instant, or null if the input date is null.
      */
     @Nullable
-    public static Instant fromLocalDate(@Nullable LocalDate date, ZoneOffset zoneOffset) {
+    public static Instant toStartOfDate(@Nullable LocalDate date, ZoneOffset zoneOffset) {
         return date == null ? null : date.atStartOfDay().toInstant(zoneOffset);
     }
 
@@ -74,13 +74,13 @@ public abstract class InstantUtils {
      * @return the corresponding Instant, or null if the input date is null.
      */
     @Nullable
-    public static Instant fromEndOfLocalDate(@Nullable LocalDate date) {
-        return date == null ? null : subtractSingle(fromLocalDate(date.plusDays(1)));
+    public static Instant toEndOfLocalDate(@Nullable LocalDate date) {
+        return date == null ? null : subtractSingle(toStartOfDate(date.plusDays(1)));
     }
 
     /**
      * Converts a LocalDate to an Instant at the end of the day in the specified ZoneOffset and accuracy.
-     * See {@link InstantUtils#fromEndOfLocalDate(LocalDate)} for details.
+     * See {@link InstantUtils#toEndOfLocalDate(LocalDate)} for details.
      *
      * @param date       the LocalDate to convert.
      * @param accuracy   the TimeUnit accuracy to use to represent the resulting Instant.
@@ -88,8 +88,8 @@ public abstract class InstantUtils {
      * @return the corresponding Instant, or null if the input date is null.
      */
     @Nullable
-    public static Instant fromEndOfLocalDate(@Nullable LocalDate date, TimeUnit accuracy, ZoneOffset zoneOffset) {
-        return date == null ? null : subtractSingle(fromLocalDate(date.plusDays(1), zoneOffset), accuracy);
+    public static Instant toEndOfLocalDate(@Nullable LocalDate date, TimeUnit accuracy, ZoneOffset zoneOffset) {
+        return date == null ? null : subtractSingle(toStartOfDate(date.plusDays(1), zoneOffset), accuracy);
     }
 
     /**
